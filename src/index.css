@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/* Design tokens. Tailwind v4 generates utilities from these (bg-ink-950,
+   text-fog-200, text-glyph-500, font-mono, …). One source of truth. */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code",
+    Menlo, Consolas, monospace;
+
+  --color-ink-950: #08090a;
+  --color-ink-900: #0c0e10;
+  --color-ink-850: #111417;
+  --color-ink-800: #161a1e;
+  --color-ink-700: #20262c;
+  --color-ink-600: #2c343b;
+
+  --color-fog-500: #6b747d;
+  --color-fog-400: #8b939c;
+  --color-fog-300: #aab2bb;
+  --color-fog-200: #ccd2d8;
+  --color-paper: #f4f2ec;
+
+  --color-glyph-600: #d18f2c;
+  --color-glyph-500: #e8a33d;
+  --color-glyph-400: #f2b75c;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-fog-200);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-glyph-500);
+    color: var(--color-ink-950);
+  }
+
+  /* subtle focus ring for keyboard users */
+  :focus-visible {
+    outline: 2px solid var(--color-glyph-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
