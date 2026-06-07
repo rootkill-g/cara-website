@@ -1,0 +1,5 @@
+# SPA fallback for client-side routing (@solidjs/router).
+# Without this, a hard request to /architecture or /glyph (refresh, deep link,
+# shared URL) would 404 on Cloudflare Pages — there is no such file on disk.
+# Serve index.html with a 200 so the router resolves the path in the browser.
+/*    /index.html   200

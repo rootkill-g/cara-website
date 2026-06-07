@@ -1,0 +1,10 @@
+{
+  // Cloudflare Pages project config. Deploy with `npm run deploy`
+  // (build locally, then `wrangler pages deploy`). The repo lives on Codeberg,
+  // which Cloudflare's dashboard git builds don't support — so we build here
+  // and upload the static output directly.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cara-website",
+  "compatibility_date": "2026-06-07",
+  "pages_build_output_dir": "dist"
+}
