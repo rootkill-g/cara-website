@@ -62,7 +62,10 @@ export class Scene {
     return { x: this.w * 0.5, y: this.h * 0.82 };
   }
   private spiralCenter() {
-    return { x: this.w * 0.5, y: this.h * 0.2 };
+    // on portrait phones the logo sits higher and smaller so it never crowds
+    // the hero text stacked below it
+    const portrait = this.h > this.w;
+    return { x: this.w * 0.5, y: this.h * (portrait ? 0.15 : 0.2) };
   }
   /**
    * The star's whole flight as one continuous curve, p in 0..1. A spiral whose
@@ -137,7 +140,10 @@ export class Scene {
 
     // floating logo (behind the travelling star so the star can pass in front)
     const sc = this.spiralCenter();
-    const logoSize = clamp(Math.min(w, h) * 0.3, 140, 340);
+    const portrait = h > w;
+    const logoSize = portrait
+      ? clamp(w * 0.32, 92, 170)
+      : clamp(Math.min(w, h) * 0.3, 140, 340);
     this.logo.render(ctx, sc.x, sc.y - logoSize * 0.06, logoSize, t, smoothstep(STRIKE_END + 0.2, AMBIENT_AT + 0.6, t));
 
     // travelling star (quick fade-in so it doesn't pop on the first frame)

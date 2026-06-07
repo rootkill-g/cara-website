@@ -47,29 +47,29 @@ export default function Home() {
         <CaraScene class="absolute inset-0 h-full w-full" onIntroDone={() => setReady(true)} />
 
         <div
-          class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center transition-opacity duration-1000"
+          class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 pb-[10vh] text-center transition-opacity duration-1000 sm:pb-0"
           style={{ opacity: ready() ? "1" : "0" }}
         >
-          <p class="font-mono text-[11px] uppercase tracking-[0.3em] text-glyph-400 sm:text-xs">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-glyph-400 sm:text-xs sm:tracking-[0.3em]">
             A from-scratch browser engine · written in Zig
           </p>
-          <h1 class="mt-5 max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-paper drop-shadow-[0_2px_20px_rgba(0,0,0,0.8)] sm:text-6xl">
+          <h1 class="mt-4 max-w-3xl text-3xl font-semibold leading-[1.12] tracking-tight text-paper drop-shadow-[0_2px_20px_rgba(0,0,0,0.85)] sm:mt-5 sm:text-6xl sm:leading-[1.08]">
             A browser that refuses to render the current web.
           </h1>
-          <p class="mt-6 max-w-xl text-base leading-relaxed text-fog-300 sm:text-lg">
+          <p class="mt-6 hidden max-w-xl text-base leading-relaxed text-fog-300 sm:block sm:text-lg">
             We gathered around a different fire. No HTML, no DOM, no JavaScript
             runtime, no telemetry — just a small engine you can hold in your head.
           </p>
-          <div class="pointer-events-auto mt-9 flex flex-wrap items-center justify-center gap-4">
+          <div class="pointer-events-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:mt-9 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-4">
             <A
               href="/architecture"
-              class="rounded-lg bg-glyph-500 px-5 py-2.5 text-sm font-medium text-ink-950 transition hover:bg-glyph-400"
+              class="rounded-lg bg-glyph-500 px-5 py-3 text-center text-sm font-medium text-ink-950 transition hover:bg-glyph-400 sm:py-2.5"
             >
               Read the architecture
             </A>
             <A
               href="/glyph"
-              class="rounded-lg border border-ink-600 bg-ink-950/40 px-5 py-2.5 text-sm font-medium text-fog-200 backdrop-blur-sm transition hover:border-fog-400 hover:text-paper"
+              class="rounded-lg border border-ink-600 bg-ink-950/40 px-5 py-3 text-center text-sm font-medium text-fog-200 backdrop-blur-sm transition hover:border-fog-400 hover:text-paper sm:py-2.5"
             >
               See the Glyph language
             </A>
