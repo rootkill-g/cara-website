@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: cara-website-runner
+    runs-on: codeberg-tiny
     container:
       image: node:22-bookworm
     steps:
