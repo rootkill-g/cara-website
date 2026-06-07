@@ -1,27 +1,30 @@
 import { For } from "solid-js";
-import { Section, Eyebrow, CodeBlock } from "../components/ui";
+import { Section, Eyebrow } from "../components/ui";
+import ProcessDiagram from "../components/diagrams/ProcessDiagram";
+import RingDiagram from "../components/diagrams/RingDiagram";
+import Stepper from "../components/diagrams/Stepper";
 
 const rendererParts: [string, string][] = [
-  ["Glyph Parser", "Single-pass, zero-allocation recursive-descent parse of .glyph."],
-  ["Lua Runtime", "LuaJIT, JIT on — safe behind the OS sandbox. Page behavior."],
-  ["Reactivity", "signal / compute / bind; mutations set DirtyFlags."],
-  ["Scene Graph", "ECS — entities are u32, hierarchy is first-child / next-sibling, dense SoA pools."],
-  ["Systems", "Style → Strict-Box Layout → Paint → A11y."],
-  ["Text Trinity", "SheenBidi (bidi), libunibreak (breaks), HarfBuzz (shaping), FreeType (raster)."],
-  ["Display List Writer", "Serializes paint output into the shared-memory ring."],
+  ["Glyph parser", "Single-pass, zero-allocation parse of a page."],
+  ["Lua runtime", "Page behavior, safe behind the OS sandbox."],
+  ["Reactivity", "Signals and bindings; mutations mark what is dirty."],
+  ["Scene graph", "A dense, cache-friendly tree of everything visible."],
+  ["Systems", "Style, then strict-box layout, then paint, then a11y."],
+  ["Text pipeline", "Bidi, line-breaking, shaping, and rasterization."],
+  ["Display-list writer", "Serializes paint output into the shared ring."],
 ];
 
 const hostParts: [string, string][] = [
-  ["Window + Event Pump", "The OS window and raw input events."],
-  ["Process Spawner", "Launches one renderer per origin."],
-  ["Display List Executor", "Reads the ring, submits draw commands to the GPU."],
-  ["GPU", "Render backend, color framebuffer, and a parallel ID buffer for hit-testing."],
-  ["Hit-Test", "Reads one ID-buffer pixel — O(1), correct under overlap and clipping by construction."],
-  ["Net · Storage · Clipboard", "libcurl/HTTP-2, per-origin SQLite, system clipboard."],
-  ["AccessKit Bridge", "Projects the a11y tree to platform APIs."],
+  ["Window + events", "The OS window and the raw input stream."],
+  ["Process spawner", "Launches one renderer per origin."],
+  ["Display-list executor", "Reads the ring, submits draw commands to the GPU."],
+  ["GPU", "Framebuffer plus a parallel ID buffer for hit-testing."],
+  ["Hit-test", "Reads one ID-buffer pixel — O(1), correct under overlap."],
+  ["Net · storage · clipboard", "HTTP/2, per-origin storage, the system clipboard."],
+  ["Accessibility bridge", "Projects the a11y tree to platform APIs."],
 ];
 
-const messages = [
+const messages: [string, string, string][] = [
   ["SpawnRenderer", "host (internal)", "Create a renderer for an origin"],
   ["LoadPage", "host → renderer", "Deliver the page bundle"],
   ["Fetch / FetchResult", "renderer ⇄ host", "Network request and response"],
@@ -35,35 +38,22 @@ const messages = [
 ];
 
 const lifecycle = [
-  "Fetch — host negotiates HTTP/2 + TLS, retrieves the bundle.",
-  "Spawn + deliver — host spawns a renderer, sends the bundle over IPC.",
-  "Parse — renderer parses .glyph in one zero-allocation pass.",
-  "Build — scene graph constructed, initial DirtyFlags set.",
-  "Style — utility tokens resolved during the parse.",
-  "Script — Lua entry script registers signals, bindings, handlers.",
-  "First frame — layout → paint → display list → FrameReady → a11y.",
-  "Render — host Acquire-loads head, walks the list, submits to GPU, presents.",
-  "Input loop — OS event → ID-buffer read → InputEvent → dispatch → DirtyFlags → next frame.",
+  { title: "Fetch", body: "The host negotiates HTTP/2 and TLS and retrieves the page bundle." },
+  { title: "Spawn & deliver", body: "The host spawns a renderer for the origin and sends the bundle over IPC." },
+  { title: "Parse", body: "The renderer parses the page in one zero-allocation pass." },
+  { title: "Build", body: "The scene graph is constructed and the initial dirty flags are set." },
+  { title: "Style", body: "Utility tokens are resolved into concrete values during the parse." },
+  { title: "Script", body: "The Lua entry script registers signals, bindings, and handlers." },
+  { title: "First frame", body: "Layout, then paint, then the display list, then a11y — the page appears." },
+  { title: "Render", body: "The host acquires the new head, walks the list, submits to the GPU, presents." },
+  { title: "Input loop", body: "An OS event resolves to an entity, dispatches, marks dirty, draws the next frame." },
 ];
 
-function ProcessCard(props: {
-  label: string;
-  sub: string;
-  parts: [string, string][];
-  accent?: boolean;
-}) {
+function ProcessCard(props: { label: string; sub: string; parts: [string, string][]; accent?: boolean }) {
   return (
-    <div
-      class={`rounded-2xl border p-6 ${
-        props.accent
-          ? "border-glyph-500/30 bg-glyph-500/5"
-          : "border-ink-700 bg-ink-900"
-      }`}
-    >
+    <div class={`rounded-2xl border p-6 ${props.accent ? "border-glyph-500/30 bg-glyph-500/5" : "border-star-500/25 bg-ink-900/60"}`}>
       <div class="flex items-baseline justify-between">
-        <h3 class="font-mono text-sm uppercase tracking-[0.2em] text-paper">
-          {props.label}
-        </h3>
+        <h3 class="font-mono text-sm uppercase tracking-[0.2em] text-paper">{props.label}</h3>
         <span class="font-mono text-xs text-fog-500">{props.sub}</span>
       </div>
       <ul class="mt-5 space-y-3">
@@ -83,49 +73,74 @@ function ProcessCard(props: {
 export default function Architecture() {
   return (
     <>
-      <Section class="pt-20 pb-12">
+      <Section class="pt-28 pb-10">
         <Eyebrow>Architecture</Eyebrow>
         <h1 class="mt-6 max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-paper sm:text-5xl">
           A privileged host. A sandboxed renderer. Two channels between them.
         </h1>
         <p class="mt-7 max-w-2xl text-lg leading-relaxed text-fog-300">
-          Every decision in Cara lives inside one of two OS processes, or
-          describes how the two communicate. The split is the security boundary,
-          the performance boundary, and the conceptual boundary all at once.
+          Every decision in Cara lives inside one of two operating-system
+          processes, or describes how the two talk. That split is the security
+          boundary, the performance boundary, and the conceptual boundary all at
+          once.
         </p>
       </Section>
 
-      {/* The two processes */}
-      <Section class="py-12">
+      <Section class="py-8">
+        <ProcessDiagram />
+      </Section>
+
+      {/* the two processes */}
+      <Section class="py-10">
         <div class="grid gap-5 lg:grid-cols-2">
-          <ProcessCard
-            label="Renderer"
-            sub="sandboxed · per origin"
-            parts={rendererParts}
-            accent
-          />
+          <ProcessCard label="Renderer" sub="sandboxed · per origin" parts={rendererParts} accent />
           <ProcessCard label="Host" sub="privileged · owns the OS" parts={hostParts} />
         </div>
 
-        {/* Channels between them */}
         <div class="mt-5 grid gap-5 md:grid-cols-2">
-          <div class="rounded-2xl border border-ink-700 bg-ink-900 p-6">
+          <div class="rounded-2xl border border-ink-700 bg-ink-900/60 p-6">
             <h3 class="text-base font-medium text-paper">Shared-memory ring</h3>
             <p class="mt-2 text-sm leading-relaxed text-fog-400">
               Bulk per-frame display lists, mapped read-write into both
-              processes. The producer Release-stores <code class="font-mono text-glyph-400">head</code>;
-              the consumer Acquire-loads it. Never relaxed — relaxed ordering
-              would let the consumer read uninitialized memory.
+              processes. No per-frame copies cross between them. The producer
+              publishes; the consumer drains — and the ordering rule below keeps
+              that safe.
             </p>
           </div>
-          <div class="rounded-2xl border border-ink-700 bg-ink-900 p-6">
+          <div class="rounded-2xl border border-ink-700 bg-ink-900/60 p-6">
             <h3 class="text-base font-medium text-paper">IPC control channel</h3>
             <p class="mt-2 text-sm leading-relaxed text-fog-400">
               Small typed messages over a Unix socket. No pointers ever cross the
-              boundary — resources are host-assigned integer IDs, variable data
-              is referenced by byte offset from the ring base.
+              boundary: resources are host-assigned integer IDs, and variable
+              data is referenced by its byte offset from the ring's base.
             </p>
           </div>
+        </div>
+      </Section>
+
+      {/* the ring + ordering rule */}
+      <Section class="border-t border-ink-800 py-20">
+        <div class="grid items-center gap-12 md:grid-cols-2">
+          <div>
+            <Eyebrow>The one rule that cannot be broken</Eyebrow>
+            <h2 class="mt-5 text-2xl font-semibold tracking-tight text-paper sm:text-3xl">
+              Release on write. Acquire on read. Never relaxed.
+            </h2>
+            <p class="mt-5 text-base leading-relaxed text-fog-300">
+              The renderer writes draw commands into the ring, then publishes the{" "}
+              <span class="text-glyph-300">head</span> cursor with a single
+              release-store. The host acquires that cursor before it reads, which
+              guarantees the writes are visible first. The consumer's{" "}
+              <span class="text-star-300">tail</span> chases the head around the
+              ring forever.
+            </p>
+            <p class="mt-4 text-base leading-relaxed text-fog-300">
+              Cursor arithmetic wraps, and raw cursors are never compared with
+              less-than. This is the single invariant that, if violated, produces
+              intermittent corruption that is almost impossible to reproduce.
+            </p>
+          </div>
+          <RingDiagram />
         </div>
       </Section>
 
@@ -133,7 +148,7 @@ export default function Architecture() {
       <Section class="border-t border-ink-800 py-16">
         <Eyebrow>The control channel</Eyebrow>
         <h2 class="mt-5 text-2xl font-semibold tracking-tight text-paper sm:text-3xl">
-          Twelve message types. That's the whole catalog.
+          Twelve message types. That is the whole catalog.
         </h2>
         <div class="mt-8 overflow-hidden rounded-2xl border border-ink-700">
           <table class="w-full border-collapse text-sm">
@@ -159,54 +174,16 @@ export default function Architecture() {
         </div>
       </Section>
 
-      {/* Lifecycle */}
-      <Section class="border-t border-ink-800 py-16">
+      {/* lifecycle */}
+      <Section class="border-t border-ink-800 py-16 pb-28">
         <div class="grid gap-12 md:grid-cols-[0.7fr_1.3fr]">
           <div>
             <Eyebrow>How a page loads</Eyebrow>
             <h2 class="mt-5 text-2xl font-semibold tracking-tight text-paper sm:text-3xl">
-              Steps 1–7 run once. Steps 8–9 are the steady state.
+              Steps one to seven run once. Eight and nine are the steady state.
             </h2>
           </div>
-          <ol class="space-y-4">
-            <For each={lifecycle}>
-              {(step, i) => (
-                <li class="flex gap-4">
-                  <span class="font-mono text-sm text-glyph-500">
-                    {String(i() + 1).padStart(2, "0")}
-                  </span>
-                  <span class="text-sm leading-relaxed text-fog-300">{step}</span>
-                </li>
-              )}
-            </For>
-          </ol>
-        </div>
-      </Section>
-
-      {/* Ordering invariant */}
-      <Section class="border-t border-ink-800 py-16 pb-24">
-        <Eyebrow>The one rule that cannot be broken</Eyebrow>
-        <h2 class="mt-5 max-w-3xl text-2xl font-semibold tracking-tight text-paper sm:text-3xl">
-          Release on write, Acquire on read. Never relaxed.
-        </h2>
-        <p class="mt-5 max-w-2xl text-base leading-relaxed text-fog-300">
-          The producer writes draw commands, then Release-stores the head
-          cursor. The consumer Acquire-loads head, then reads. Cursor arithmetic
-          is wrapping; raw cursors are never order-compared. This is the single
-          invariant that, if violated, produces intermittent corruption that is
-          nearly impossible to reproduce.
-        </p>
-        <div class="mt-8 max-w-2xl">
-          <CodeBlock
-            label="src/ipc/ring.zig — the publish point"
-            code={`// producer: write payload, then publish with ONE release-store
-@memcpy(payload[idx + record_header_size ..][0..len], record);
-self.head +%= want;            // local cursor — not yet visible
-
-pub fn commit(self: *Writer) void {
-    @atomicStore(u32, &self.ring.header.head, self.head, .release);
-}`}
-          />
+          <Stepper steps={lifecycle} />
         </div>
       </Section>
     </>

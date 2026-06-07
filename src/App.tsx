@@ -15,7 +15,10 @@ const App: ParentComponent = (props) => {
   });
 
   return (
-    <div class="flex min-h-dvh flex-col bg-ink-950">
+    <div class="flex min-h-dvh flex-col">
+      {/* cheap starry backdrop behind every page (the Home hero paints its own
+          richer canvas on top) */}
+      <div class="starfield" aria-hidden="true" />
       <Nav />
       <main class="flex-1">{props.children}</main>
       <Footer />

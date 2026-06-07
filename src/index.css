@@ -1,29 +1,42 @@
 @import "tailwindcss";
 
 /* Design tokens. Tailwind v4 generates utilities from these (bg-ink-950,
-   text-fog-200, text-glyph-500, font-mono, …). One source of truth. */
+   text-fog-200, text-glyph-500, text-star-400, font-mono, …). One source of
+   truth. Two accent families: warm "glyph" (the fire) and cool "star" (the
+   night sky) — the bridge from Cara's amber to the Tor/Tails dark-privacy look. */
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code",
     Menlo, Consolas, monospace;
 
-  --color-ink-950: #08090a;
-  --color-ink-900: #0c0e10;
-  --color-ink-850: #111417;
-  --color-ink-800: #161a1e;
-  --color-ink-700: #20262c;
-  --color-ink-600: #2c343b;
+  /* Night — backgrounds, deep to surface. */
+  --color-ink-950: #050608;
+  --color-ink-900: #0a0c10;
+  --color-ink-850: #0f1217;
+  --color-ink-800: #14181f;
+  --color-ink-700: #1d232c;
+  --color-ink-600: #2a323d;
 
+  /* Fog — text, dim to bright. */
   --color-fog-500: #6b747d;
   --color-fog-400: #8b939c;
   --color-fog-300: #aab2bb;
   --color-fog-200: #ccd2d8;
   --color-paper: #f4f2ec;
 
+  /* Glyph — the fire. Warm amber. */
   --color-glyph-600: #d18f2c;
   --color-glyph-500: #e8a33d;
   --color-glyph-400: #f2b75c;
+
+  /* Star — the sky. Cool starlight blue/violet. */
+  --color-star-600: #5b6c9a;
+  --color-star-500: #7f8fc8;
+  --color-star-400: #a6b3e6;
+  --color-star-300: #cdd6f7;
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
@@ -44,10 +57,133 @@
     color: var(--color-ink-950);
   }
 
-  /* subtle focus ring for keyboard users */
   :focus-visible {
     outline: 2px solid var(--color-glyph-500);
     outline-offset: 2px;
     border-radius: 2px;
   }
+}
+
+/* ── Site-wide starfield ──────────────────────────────────────────────────
+   A cheap, GPU-cheap starry backdrop behind every page (the heavy Canvas
+   cinematic only runs in the Home hero). Layered radial-gradient "stars" over
+   a faint cool nebula. A single very slow opacity drift gives it life without
+   per-star work. */
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--color-ink-950);
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, #cdd6f7 99%, transparent),
+    radial-gradient(1px 1px at 75% 18%, #ffffff 99%, transparent),
+    radial-gradient(1px 1px at 40% 70%, #a6b3e6 99%, transparent),
+    radial-gradient(1.5px 1.5px at 88% 62%, #ffffff 99%, transparent),
+    radial-gradient(1px 1px at 12% 82%, #cdd6f7 99%, transparent),
+    radial-gradient(1px 1px at 60% 45%, #ffffff 99%, transparent),
+    radial-gradient(1px 1px at 90% 88%, #a6b3e6 99%, transparent),
+    radial-gradient(1px 1px at 33% 12%, #ffffff 99%, transparent),
+    radial-gradient(1px 1px at 52% 92%, #cdd6f7 99%, transparent),
+    radial-gradient(1px 1px at 8% 55%, #ffffff 99%, transparent),
+    radial-gradient(
+      1200px 700px at 70% -10%,
+      color-mix(in srgb, var(--color-star-600) 12%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      900px 600px at 10% 110%,
+      color-mix(in srgb, var(--color-glyph-600) 6%, transparent),
+      transparent 70%
+    );
+  background-repeat: no-repeat;
+}
+
+.starfield::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 25% 22%, #ffffff 99%, transparent),
+    radial-gradient(1px 1px at 68% 78%, #cdd6f7 99%, transparent),
+    radial-gradient(1px 1px at 45% 40%, #ffffff 99%, transparent),
+    radial-gradient(1px 1px at 82% 33%, #a6b3e6 99%, transparent),
+    radial-gradient(1px 1px at 15% 65%, #ffffff 99%, transparent),
+    radial-gradient(1px 1px at 95% 50%, #cdd6f7 99%, transparent);
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  animation: star-drift 9s ease-in-out infinite;
+}
+
+/* ── Keyframes used by the animated diagrams ─────────────────────────────── */
+@keyframes star-drift {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rise-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Honour reduced-motion across the whole site: stop ambient + diagram motion.
+   The Canvas scene reads the same preference in JS and renders a calm frame. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .starfield::after,
+  .anim-float,
+  [data-flow],
+  [data-spin] {
+    animation: none !important;
+  }
+}
+
+/* Utility hooks for diagrams. */
+.anim-float {
+  animation: float-y 6s var(--ease-out-soft) infinite;
 }
