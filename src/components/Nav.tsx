@@ -7,7 +7,7 @@ const links = [
   { href: "/glyph", label: "Glyph" },
 ];
 
-const SOURCE_URL = "https://codeberg.org/rootkill/cara-website";
+const SOURCE_URL = "https://codeberg.org/rootkill/cara";
 
 export default function Nav() {
   // Transparent over the cinematic hero, gains a backdrop once you scroll.
