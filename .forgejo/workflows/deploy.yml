@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: docker
+    runs-on: cara-website-runner
     container:
       image: node:22-bookworm
     steps:
