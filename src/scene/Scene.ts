@@ -128,11 +128,8 @@ export class Scene {
   render(ctx: CanvasRenderingContext2D) {
     const { w, h, t } = this;
 
-    // night
-    const bg = ctx.createLinearGradient(0, 0, 0, h);
-    bg.addColorStop(0, "#040507");
-    bg.addColorStop(1, "#06070a");
-    ctx.fillStyle = bg;
+    // night — pitch black sky
+    ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, w, h);
 
     // sky — stars come up behind the streak almost immediately

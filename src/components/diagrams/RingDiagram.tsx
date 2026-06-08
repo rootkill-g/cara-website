@@ -33,11 +33,11 @@ export default function RingDiagram() {
         <g style={spin} data-spin>
           <path d="M 84.6 97.2 A 92 92 0 0 1 160 58" fill="none"
             stroke="var(--color-glyph-500)" stroke-width="10" stroke-linecap="round" opacity="0.9" />
-          {/* head — producer */}
+          {/* head (producer) */}
           <circle cx="160" cy="58" r="8" fill="var(--color-glyph-400)" />
           <circle cx="160" cy="58" r="8" fill="none" stroke="var(--color-glyph-400)" stroke-width="6" opacity="0.35"
             data-flow style={visible() ? "animation:pulse-soft 2.2s ease-in-out infinite" : ""} />
-          {/* tail — consumer */}
+          {/* tail (consumer) */}
           <circle cx="84.6" cy="97.2" r="7" fill="var(--color-star-400)" />
         </g>
 
@@ -47,10 +47,10 @@ export default function RingDiagram() {
 
       <div class="mt-4 flex justify-center gap-6 text-xs">
         <span class="flex items-center gap-2 text-fog-400">
-          <span class="inline-block h-2.5 w-2.5 rounded-full" style="background:var(--color-glyph-400)" /> head — producer
+          <span class="inline-block h-2.5 w-2.5 rounded-full" style="background:var(--color-glyph-400)" /> head (producer)
         </span>
         <span class="flex items-center gap-2 text-fog-400">
-          <span class="inline-block h-2.5 w-2.5 rounded-full" style="background:var(--color-star-400)" /> tail — consumer
+          <span class="inline-block h-2.5 w-2.5 rounded-full" style="background:var(--color-star-400)" /> tail (consumer)
         </span>
       </div>
     </div>

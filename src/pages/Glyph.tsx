@@ -8,7 +8,7 @@ const rules = [
   {
     n: "01",
     title: "Nodes are identifiers",
-    body: "Lowercase names — box, text, button — are built-in primitives. Capitalized names — Card, TodoItem — are your own components.",
+    body: "Lowercase names (box, text, button) are built-in primitives. Capitalized names (Card, TodoItem) are your own components.",
   },
   {
     n: "02",
@@ -23,16 +23,16 @@ const rules = [
   {
     n: "04",
     title: "Children live in braces",
-    body: "Braces are authoritative. Indentation is for humans — there is no significant whitespace anywhere in Glyph.",
+    body: "Braces are authoritative. Indentation is for humans. There is no significant whitespace anywhere in Glyph.",
   },
 ];
 
 const excluded = [
-  "Indentation-significant syntax — braces are the truth.",
+  "Indentation-significant syntax (braces are the truth).",
   "Inline expressions, conditionals, or loops in markup.",
   "Template inheritance, partials, or includes.",
   "Comments inside attribute values, CDATA, quirks mode.",
-  "Error recovery — invalid input fails loudly, with a position.",
+  "Error recovery (invalid input fails loudly, with a position).",
   "Runtime component registration.",
 ];
 
@@ -42,13 +42,13 @@ export default function Glyph() {
       <Section class="pt-28 pb-10">
         <Eyebrow>The document language</Eyebrow>
         <h1 class="mt-6 max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-paper sm:text-5xl">
-          Glyph — the smallest unit of writing.
+          Glyph, the smallest unit of writing.
         </h1>
         <p class="mt-7 max-w-2xl text-lg leading-relaxed text-fog-300">
-          A glyph is an inscribed mark; the language is named for what it
-          produces. It takes the parts of Markdown, KDL, and component systems
-          that work — and discards the rest. Invalid input is a parse error with
-          a position. There is no quirks mode and no second chance.
+          A glyph is an inscribed mark, named for what it produces. It takes the
+          parts of Markdown, KDL, and component systems that work, and discards
+          the rest. Invalid input is a parse error with a position. There is no
+          quirks mode and no second chance.
         </p>
       </Section>
 
@@ -87,7 +87,7 @@ export default function Glyph() {
             <p class="mt-5 text-base leading-relaxed text-fog-300">
               A content string is expanded into a flat sequence of styled spans
               while the page is parsed. By the time layout runs, the scene graph
-              holds a plain, cache-friendly array of spans — the text pipeline
+              holds a plain, cache-friendly array of spans. The text pipeline
               never sees a single character of markup syntax.
             </p>
           </div>
@@ -108,12 +108,12 @@ export default function Glyph() {
               The <span class="rounded bg-ink-800 px-1.5 py-0.5 font-mono text-glyph-400">$</span>{" "}
               prefix is the only point in Glyph that references code. On a click,
               a bound name is looked up in the page's Lua state and invoked. If
-              that name is missing, the event is logged and dropped — the page
+              that name is missing, the event is logged and dropped. The page
               does not crash.
             </p>
             <p class="mt-4 text-base leading-relaxed text-fog-300">
               Documents declare. Computation lives in Lua. The boundary between
-              them is grammatical, not contextual — and it is exactly that wide.
+              them is grammatical, not contextual, and exactly that wide.
             </p>
           </div>
         </div>
@@ -129,7 +129,7 @@ export default function Glyph() {
           <For each={excluded}>
             {(item) => (
               <li class="flex gap-3">
-                <span class="select-none text-glyph-500">—</span>
+                <span class="select-none text-glyph-500">·</span>
                 <span>{item}</span>
               </li>
             )}

@@ -36,7 +36,7 @@ export default function Footer() {
       <div class="mx-auto max-w-5xl px-6 pb-10">
         <p class="font-mono text-xs leading-relaxed text-fog-500">
           This page makes no network requests on its own behalf. No fonts, no
-          analytics, no trackers — the same opinion the browser holds.
+          analytics, no trackers. The same opinion the browser holds.
         </p>
       </div>
     </footer>

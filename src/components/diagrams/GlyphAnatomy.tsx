@@ -5,11 +5,11 @@ import { useInView } from "../useInView";
 // Each part fades up in sequence. This is the grammar, not an API: a name, some
 // dot-prefixed utilities, an attribute, and brace-delimited children.
 const parts: { token: string; kind: string; tone: string }[] = [
-  { token: "box", kind: "name — a primitive (or a Capitalized component)", tone: "glyph" },
-  { token: "#panel", kind: "id — shorthand for a named node", tone: "fog" },
-  { token: ".flow-col", kind: "utility — a style token", tone: "star" },
-  { token: ".p-4", kind: "utility — padding", tone: "star" },
-  { token: "{ … }", kind: "children — braces are authoritative", tone: "fog" },
+  { token: "box", kind: "a primitive, or your Capitalized component", tone: "glyph" },
+  { token: "#panel", kind: "an id, shorthand for a named node", tone: "fog" },
+  { token: ".flow-col", kind: "a utility, a style token", tone: "star" },
+  { token: ".p-4", kind: "a utility, padding", tone: "star" },
+  { token: "{ … }", kind: "children, in braces", tone: "fog" },
 ];
 
 const toneClass: Record<string, string> = {

@@ -28,7 +28,7 @@ export default function Nav() {
       }}
     >
       <nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <A href="/" class="group flex items-center gap-2.5" aria-label="Cara — home">
+        <A href="/" class="group flex items-center gap-2.5" aria-label="Cara home">
           <Logo class="h-6 w-6 text-glyph-500 transition group-hover:text-glyph-400" />
           <span class="font-mono text-sm font-medium uppercase tracking-[0.22em] text-paper">
             Cara

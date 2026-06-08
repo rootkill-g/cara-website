@@ -7,7 +7,7 @@ import Stepper from "../components/diagrams/Stepper";
 const rendererParts: [string, string][] = [
   ["Glyph parser", "Single-pass, zero-allocation parse of a page."],
   ["Lua runtime", "Page behavior, safe behind the OS sandbox."],
-  ["Reactivity", "Signals and bindings; mutations mark what is dirty."],
+  ["Reactivity", "Signals and bindings. Mutations mark what is dirty."],
   ["Scene graph", "A dense, cache-friendly tree of everything visible."],
   ["Systems", "Style, then strict-box layout, then paint, then a11y."],
   ["Text pipeline", "Bidi, line-breaking, shaping, and rasterization."],
@@ -19,7 +19,7 @@ const hostParts: [string, string][] = [
   ["Process spawner", "Launches one renderer per origin."],
   ["Display-list executor", "Reads the ring, submits draw commands to the GPU."],
   ["GPU", "Framebuffer plus a parallel ID buffer for hit-testing."],
-  ["Hit-test", "Reads one ID-buffer pixel — O(1), correct under overlap."],
+  ["Hit-test", "Reads one ID-buffer pixel. O(1), correct under overlap."],
   ["Net · storage · clipboard", "HTTP/2, per-origin storage, the system clipboard."],
   ["Accessibility bridge", "Projects the a11y tree to platform APIs."],
 ];
@@ -44,7 +44,7 @@ const lifecycle = [
   { title: "Build", body: "The scene graph is constructed and the initial dirty flags are set." },
   { title: "Style", body: "Utility tokens are resolved into concrete values during the parse." },
   { title: "Script", body: "The Lua entry script registers signals, bindings, and handlers." },
-  { title: "First frame", body: "Layout, then paint, then the display list, then a11y — the page appears." },
+  { title: "First frame", body: "Layout, then paint, then the display list, then a11y. The page appears." },
   { title: "Render", body: "The host acquires the new head, walks the list, submits to the GPU, presents." },
   { title: "Input loop", body: "An OS event resolves to an entity, dispatches, marks dirty, draws the next frame." },
 ];
@@ -103,7 +103,7 @@ export default function Architecture() {
             <p class="mt-2 text-sm leading-relaxed text-fog-400">
               Bulk per-frame display lists, mapped read-write into both
               processes. No per-frame copies cross between them. The producer
-              publishes; the consumer drains — and the ordering rule below keeps
+              publishes, the consumer drains, and the ordering rule below keeps
               that safe.
             </p>
           </div>

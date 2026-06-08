@@ -50,7 +50,7 @@ export default function DesugarDemo() {
       </div>
       <p class="mt-6 max-w-xl text-sm leading-relaxed text-fog-400">
         One <span class="text-fog-200">u32</span> bitmask tracks the styles, zero allocations.
-        Triple-quoted strings opt out; attribute values never desugar.
+        Triple-quoted strings opt out. Attribute values never desugar.
       </p>
     </div>
   );

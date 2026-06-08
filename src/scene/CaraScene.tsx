@@ -31,10 +31,17 @@ export default function CaraScene(props: {
     const scene = new Scene(reduced, onDone);
 
     let dpr = 1;
+    let lastW = 0;
+    let lastH = 0;
     const resize = () => {
       const parent = canvas.parentElement!;
       const w = parent.clientWidth;
       const h = parent.clientHeight;
+      // skip spurious observer fires where nothing actually changed — touching
+      // the backing store (canvas.width/height) clears the canvas to black
+      if (w === lastW && h === lastH) return;
+      lastW = w;
+      lastH = h;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
@@ -42,7 +49,10 @@ export default function CaraScene(props: {
       canvas.style.height = h + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       scene.resize(w, h);
-      if (reduced) scene.render(ctx); // repaint the static frame at new size
+      // repaint immediately so a resize never leaves the canvas blank — on
+      // mobile the URL bar shows/hides mid-scroll and resizes us while rAF is
+      // throttled, which is exactly when the cleared (black) canvas would show
+      scene.render(ctx);
     };
 
     const ro = new ResizeObserver(resize);

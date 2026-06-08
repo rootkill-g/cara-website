@@ -7,20 +7,20 @@ import ProcessDiagram from "../components/diagrams/ProcessDiagram";
 const pillars = [
   {
     title: "One language for structure",
-    body: "Pages are written in Glyph — a small declarative grammar with no quirks mode, no parser-as-state-machine, and no thirty-year compatibility tax to carry.",
+    body: "Pages are written in Glyph, a small declarative grammar. No quirks mode, no compatibility tax.",
   },
   {
     title: "One language for behavior",
-    body: "Logic lives in Lua, sandboxed and budgeted. The document declares; computation stays in one place, reached through a single two-character seam.",
+    body: "Logic lives in Lua, sandboxed. Documents declare. Code stays behind a single $.",
   },
   {
     title: "One render path",
-    body: "Scene graph to display list to shared memory to screen. A renderer process produces; a privileged host consumes and paints. Two channels, no third.",
+    body: "Scene graph → display list → shared memory → screen. Two channels, no third.",
   },
 ];
 
 const refuses = [
-  "No HTML — and so none of its error-correcting state machines.",
+  "No HTML, and so none of its error-correcting state machines.",
   "No DOM, no CSS cascade, no quirks mode.",
   "No JavaScript runtime baked into the page.",
   "No telemetry, no phone-home, no analytics.",
@@ -29,12 +29,12 @@ const refuses = [
 ];
 
 const roadmap = [
-  { n: "01", title: "The ring", tone: "live" as const, body: "Framed shared-memory channel under strict Release/Acquire ordering. Done and unit-tested." },
-  { n: "02", title: "Wire protocols", tone: "soon" as const, body: "The draw-command format and the IPC control channel; then kill the busy-wait." },
-  { n: "03", title: "Host renderer", tone: "plan" as const, body: "GPU surface, framebuffer, an ID buffer, O(1) hit-testing, resize." },
-  { n: "04", title: "Text", tone: "plan" as const, body: "A glyph atlas and the text pipeline: bidi, line-breaking, shaping, rasterization." },
-  { n: "05", title: "Renderer brain", tone: "plan" as const, body: "The scene-graph engine, the Glyph parser, style, strict-box layout, paint." },
-  { n: "06", title: "Interactivity", tone: "plan" as const, body: "Lua bindings, reactivity, event dispatch, the standard component library." },
+  { n: "01", title: "The ring", tone: "live" as const, body: "Framed shared-memory channel, strict Release/Acquire. Done, unit-tested." },
+  { n: "02", title: "Wire protocols", tone: "soon" as const, body: "Draw-command format and the IPC channel, then kill the busy-wait." },
+  { n: "03", title: "Host renderer", tone: "plan" as const, body: "GPU surface, framebuffer, ID buffer, O(1) hit-test." },
+  { n: "04", title: "Text", tone: "plan" as const, body: "Glyph atlas, with bidi, line-breaking, shaping, raster." },
+  { n: "05", title: "Renderer brain", tone: "plan" as const, body: "Scene-graph engine, parser, style, layout, paint." },
+  { n: "06", title: "Interactivity", tone: "plan" as const, body: "Lua bindings, reactivity, events, components." },
 ];
 
 export default function Home() {
@@ -53,12 +53,12 @@ export default function Home() {
           <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-glyph-400 sm:text-xs sm:tracking-[0.3em]">
             A from-scratch browser engine · written in Zig
           </p>
-          <h1 class="mt-4 max-w-3xl text-3xl font-semibold leading-[1.12] tracking-tight text-paper drop-shadow-[0_2px_20px_rgba(0,0,0,0.85)] sm:mt-5 sm:text-6xl sm:leading-[1.08]">
-            A browser that refuses to render the current web.
+          <h1 class="font-mono uppercase mt-4 max-w-3xl text-2xl text-glyph-400 font-medium leading-[1.12] tracking-tight text-paper drop-shadow-[0_2px_20px_rgba(0,0,0,0.85)] sm:mt-5 sm:text-4xl sm:leading-[1.08]">
+            Let's rewrite the internet
           </h1>
-          <p class="mt-6 hidden max-w-xl text-base leading-relaxed text-fog-300 sm:block sm:text-lg">
-            We gathered around a different fire. No HTML, no DOM, no JavaScript
-            runtime, no telemetry — just a small engine you can hold in your head.
+          <p class="mt-5 max-w-xl text-sm leading-relaxed text-fog-300 sm:mt-6 sm:text-lg">
+            We gathered around a different fire <br />
+            Not to patch the old web, but to rewrite it
           </p>
           <div class="pointer-events-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:mt-9 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-4">
             <A
@@ -88,25 +88,22 @@ export default function Home() {
       <Section class="border-t border-ink-800 py-20 sm:py-28">
         <div class="grid gap-12 md:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <Eyebrow>The thesis</Eyebrow>
+            <Eyebrow>Thesis</Eyebrow>
             <h2 class="mt-5 text-2xl font-semibold tracking-tight text-paper sm:text-3xl">
-              The web is what was built when no one was paying attention.
+              Stop patching the past. Let's rewrite the internet.
             </h2>
           </div>
           <div class="space-y-5 text-base leading-relaxed text-fog-300">
             <p>
-              HTML, CSS, and JavaScript were not designed for the people writing
-              pages. Three decades of standards committees and ad-funded browser
-              vendors shaped them to keep the people who own the rendering
-              engines in business. Cara is what happens when you stop accepting
-              that as the only option.
+              The web is thirty years of patches on patches. HTML, CSS, and
+              JavaScript still drag every compromise ever shipped, haunted by
+              ghosts no one would choose today. You can't refactor your way out.
+              You light a new fire.
             </p>
             <p>
-              The whole project — the rendering engine, the browser built on it,
-              and the channel between them — is small enough that one person can
-              read all of it. That constraint is the feature: legibility over
-              surface area, correctness over compatibility theater, your
-              attention over someone else's quarter.
+              Cara is that fire. A browser small enough to read end to end, built
+              for the people who write and read pages, not the few who own the
+              engines. Not a simpler web. An internet worth calling an evolution.
             </p>
           </div>
         </div>
@@ -143,7 +140,7 @@ export default function Home() {
             <For each={refuses}>
               {(item) => (
                 <li class="flex gap-3 rounded-lg border border-ink-800 bg-ink-900/50 px-4 py-3 text-sm leading-relaxed text-fog-300">
-                  <span class="select-none text-glyph-500">—</span>
+                  <span class="select-none text-glyph-500">·</span>
                   <span>{item}</span>
                 </li>
               )}
@@ -162,10 +159,10 @@ export default function Home() {
             </h2>
             <p class="mt-5 text-base leading-relaxed text-fog-300">
               A privileged <strong class="text-fog-200">host</strong> owns every
-              OS resource — window, GPU, network, storage. A sandboxed{" "}
+              OS resource: the window, GPU, network, storage. A sandboxed{" "}
               <strong class="text-fog-200">renderer</strong>, one per origin,
               turns a page into a display list. Bulk per-frame data flows through
-              a shared-memory ring; small control messages flow over an IPC
+              a shared-memory ring. Small control messages flow over an IPC
               channel. A renderer compromise stays trapped behind the sandbox.
             </p>
             <A
@@ -185,7 +182,7 @@ export default function Home() {
           <div class="order-2 md:order-1 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-ink-700 bg-ink-700">
             <For
               each={[
-                ["Nodes", "Lowercase are primitives; Capitalized are your components."],
+                ["Nodes", "Lowercase are primitives. Capitalized are your components."],
                 ["Utilities", "Dot-prefixed style tokens, mapped at compile time."],
                 ["Attributes", "key=\"value\", or $name for a Lua binding."],
                 ["Children", "Live in braces. Braces are authoritative."],
@@ -205,11 +202,10 @@ export default function Home() {
               Pages are written in Glyph.
             </h2>
             <p class="mt-5 text-base leading-relaxed text-fog-300">
-              Four grammar rules — that is the entire language. A glyph is an
-              inscribed mark; the language is named for what it produces. It
-              keeps the parts of Markdown and component systems that work, and
-              discards the rest. Invalid input is a parse error with a position,
-              never a guess.
+              Four grammar rules. That is the entire language. A glyph is an
+              inscribed mark, named for what it produces. It keeps the parts of
+              Markdown and component systems that work, and discards the rest.
+              Invalid input is a parse error with a position, never a guess.
             </p>
             <A
               href="/glyph"
@@ -248,8 +244,8 @@ export default function Home() {
             </h2>
           </div>
           <p class="hidden max-w-xs text-sm leading-relaxed text-fog-500 sm:block">
-            Each layer sits on a proven one. The window is up; the shared-memory
-            ring is real and tested.
+            Each layer sits on a proven one. The window is up, the shared-memory
+            ring real and tested.
           </p>
         </div>
 

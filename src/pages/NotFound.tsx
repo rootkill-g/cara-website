@@ -11,7 +11,7 @@ export default function NotFound() {
         No parse for this path.
       </h1>
       <p class="mt-4 max-w-md text-base leading-relaxed text-fog-400">
-        There is no quirks mode and no error recovery — but there is a way home.
+        There is no quirks mode and no error recovery. But there is a way home.
       </p>
       <A
         href="/"
