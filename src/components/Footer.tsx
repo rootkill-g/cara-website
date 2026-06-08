@@ -1,5 +1,6 @@
 import { A } from "@solidjs/router";
 import Logo from "./Logo";
+import CodebergLogo from "./CodebergLogo";
 
 export default function Footer() {
   return (
@@ -26,9 +27,11 @@ export default function Footer() {
             href="https://codeberg.org/rootkill/cara-website"
             target="_blank"
             rel="noopener noreferrer"
-            class="transition hover:text-paper"
+            class="inline-flex items-center transition hover:text-paper"
+            aria-label="Source code on Codeberg"
+            title="Source on Codeberg"
           >
-            Source ↗
+            <CodebergLogo class="h-5 w-5" />
           </a>
         </nav>
       </div>

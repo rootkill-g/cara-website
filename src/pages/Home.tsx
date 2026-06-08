@@ -63,13 +63,13 @@ export default function Home() {
           <div class="pointer-events-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:mt-9 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-4">
             <A
               href="/architecture"
-              class="rounded-lg bg-glyph-500 px-5 py-3 text-center text-sm font-medium text-ink-950 transition hover:bg-glyph-400 sm:py-2.5"
+              class="rounded-lg bg-glyph-500 px-5 py-3 text-center text-sm font-medium text-ink-950 transition hover:bg-glyph-400 sm:py-2.5 font-mono text-glyph-500 uppercase"
             >
-              Read the architecture
+              Read the Architecture
             </A>
             <A
               href="/glyph"
-              class="rounded-lg border border-ink-600 bg-ink-950/40 px-5 py-3 text-center text-sm font-medium text-fog-200 backdrop-blur-sm transition hover:border-fog-400 hover:text-paper sm:py-2.5"
+              class="rounded-lg border border-ink-600 bg-ink-950/40 px-5 py-3 text-center text-sm font-medium text-fog-200 backdrop-blur-sm transition hover:border-fog-400 hover:text-paper sm:py-2.5 font-mono text-glyph-500 uppercase"
             >
               See the Glyph language
             </A>

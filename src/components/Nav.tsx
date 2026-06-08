@@ -1,16 +1,18 @@
 import { For, createSignal, onCleanup, onMount } from "solid-js";
 import { A } from "@solidjs/router";
 import Logo from "./Logo";
+import CodebergLogo from "./CodebergLogo";
 
 const links = [
-  { href: "/architecture", label: "Architecture" },
-  { href: "/glyph", label: "Glyph" },
+  { href: "/architecture", label: "ARCHITECTURE" },
+  { href: "/glyph", label: "GLYPH" },
 ];
 
 const SOURCE_URL = "https://codeberg.org/rootkill/cara";
 
 export default function Nav() {
-  // Transparent over the cinematic hero, gains a backdrop once you scroll.
+  // Pitch black at the top (the fixed starfield behind it is blue-tinted, so a
+  // transparent bar would read blue-gray); gains a frosted blur once you scroll.
   const [solid, setSolid] = createSignal(false);
   onMount(() => {
     const onScroll = () => setSolid(window.scrollY > 24);
@@ -23,8 +25,8 @@ export default function Nav() {
     <header
       class="sticky top-0 z-50 transition-colors duration-300"
       classList={{
-        "border-b border-ink-700/60 bg-ink-950/75 backdrop-blur-md": solid(),
-        "border-b border-transparent bg-transparent": !solid(),
+        "border-b border-ink-700/60 bg-black/75 backdrop-blur-md": solid(),
+        "border-b border-transparent bg-black": !solid(),
       }}
     >
       <nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
@@ -40,8 +42,8 @@ export default function Nav() {
             {(l) => (
               <A
                 href={l.href}
-                class="text-fog-400 transition hover:text-paper"
-                activeClass="text-paper"
+                class="text-fog-400 transition hover:text-paper font-mono uppercase"
+                activeClass="text-glyph-500"
                 end
               >
                 {l.label}
@@ -52,9 +54,11 @@ export default function Nav() {
             href={SOURCE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            class="text-fog-400 transition hover:text-paper"
+            class="inline-flex items-center text-fog-400 transition hover:text-paper"
+            aria-label="Source code on Codeberg"
+            title="Source on Codeberg"
           >
-            Source&nbsp;↗
+            <CodebergLogo class="h-5 w-5" />
           </a>
         </div>
       </nav>
