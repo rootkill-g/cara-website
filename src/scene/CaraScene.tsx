@@ -37,26 +37,32 @@ export default function CaraScene(props: {
 
     let dpr = 1;
     let lastW = 0;
-    let lastH = 0;
+    let layoutH = 0;
     const resize = () => {
       const parent = canvas.parentElement!;
       const w = parent.clientWidth;
       const h = parent.clientHeight;
-      // skip spurious observer fires where nothing actually changed — touching
-      // the backing store (canvas.width/height) clears the canvas to black
-      if (w === lastW && h === lastH) return;
+      // The hero is `h-dvh`, so on mobile the URL bar showing/hiding mid-scroll
+      // changes our height and fires this observer on *every* scroll. Reflowing
+      // the scene each time made it visibly "breathe" and re-rolled the
+      // mountains. Instead we size the scene to the tallest height seen at this
+      // width and let the section's `overflow-hidden` clip when the viewport is
+      // momentarily shorter — so the URL bar toggling never reflows the scene.
+      // A genuine resize (width change / orientation) re-establishes the height.
+      const widthChanged = w !== lastW;
+      if (!widthChanged && h <= layoutH) return; // URL-bar shrink or no change
       lastW = w;
-      lastH = h;
+      layoutH = widthChanged ? h : Math.max(layoutH, h);
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
+      canvas.height = Math.round(layoutH * dpr);
       canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
+      canvas.style.height = layoutH + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      scene.resize(w, h);
-      // repaint immediately so a resize never leaves the canvas blank — on
-      // mobile the URL bar shows/hides mid-scroll and resizes us while rAF is
-      // throttled, which is exactly when the cleared (black) canvas would show
+      scene.resize(w, layoutH);
+      // repaint immediately so a resize never leaves the canvas blank — the
+      // backing-store write above clears it to black, and rAF may be throttled
+      // mid-scroll, which is exactly when the cleared canvas would flash through
       scene.render(ctx);
     };
 

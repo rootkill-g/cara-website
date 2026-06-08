@@ -43,6 +43,7 @@ export class Figures {
   private ziggyRim: HTMLCanvasElement | null = null;
 
   constructor(seed = 0xb00f) {
+    this.seed = seed;
     this.rng = mulberry32(seed);
     if (typeof Image !== "undefined" && typeof document !== "undefined") {
       const img = new Image();
@@ -50,6 +51,7 @@ export class Figures {
       img.src = "/ziggy.svg";
     }
   }
+  private readonly seed: number;
   private rng: () => number;
 
   // Flatten the mascot into two layers: a dark silhouette, and a warm wash kept
@@ -114,6 +116,11 @@ export class Figures {
   }
 
   layout(w: number, h: number) {
+    // Re-seed from the fixed seed every layout. The mountains, treeline and
+    // people all draw from this one PRNG; without the reset each resize would
+    // continue the sequence and roll *different* geometry — which is exactly
+    // what made the mountains change shape on every mobile URL-bar scroll.
+    this.rng = mulberry32(this.seed);
     const r = this.rng;
     this.w = w;
     this.h = h;
