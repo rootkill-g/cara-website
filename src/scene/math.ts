@@ -47,9 +47,9 @@ export const rgba = (r: number, g: number, b: number, a: number) =>
  */
 export function fireColor(life: number): [number, number, number] {
   const l = clamp(life, 0, 1);
-  if (l > 0.85) return [255, 248, 220]; // white-hot core
-  if (l > 0.6) return [255, lerp(190, 235, (l - 0.6) / 0.25), 90]; // gold
-  if (l > 0.35) return [255, lerp(120, 190, (l - 0.35) / 0.25), 50]; // amber
-  if (l > 0.15) return [lerp(150, 235, (l - 0.15) / 0.2), 60, 30]; // ember red
-  return [70, 24, 18]; // smoke / fade
+  if (l > 0.9) return [255, 236, 184]; // hot base — warm gold-white, not pure white
+  if (l > 0.62) return [255, lerp(168, 222, (l - 0.62) / 0.28), 78]; // gold / yellow
+  if (l > 0.36) return [255, lerp(102, 168, (l - 0.36) / 0.26), 44]; // amber / orange
+  if (l > 0.15) return [lerp(140, 230, (l - 0.15) / 0.21), 54, 26]; // ember red
+  return [60, 22, 16]; // smoke / fade
 }

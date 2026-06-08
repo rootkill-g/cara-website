@@ -44,7 +44,7 @@ export default function Home() {
     <>
       {/* ── Cinematic hero ─────────────────────────────────────────────── */}
       <section class="relative h-dvh min-h-[640px] w-full overflow-hidden">
-        <CaraScene class="absolute inset-0 h-full w-full" onIntroDone={() => setReady(true)} />
+        <CaraScene class="absolute inset-0 h-full w-full" onReveal={() => setReady(true)} />
 
         <div
           class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 pb-[10vh] text-center transition-opacity duration-1000 sm:pb-0"

@@ -8,6 +8,10 @@ import { Scene } from "./Scene";
  */
 export default function CaraScene(props: {
   class?: string;
+  /** Fired when the hero content should fade in — as the fire takes and the
+   *  scene reveals, not after the whole cinematic has settled. */
+  onReveal?: () => void;
+  /** Fired when the intro is fully settled (hides the skip control). */
   onIntroDone?: () => void;
 }) {
   let canvas!: HTMLCanvasElement;
@@ -23,12 +27,13 @@ export default function CaraScene(props: {
       matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let done = false;
+    const onReveal = () => props.onReveal?.();
     const onDone = () => {
       done = true;
       setShowSkip(false);
       props.onIntroDone?.();
     };
-    const scene = new Scene(reduced, onDone);
+    const scene = new Scene(reduced, onReveal, onDone);
 
     let dpr = 1;
     let lastW = 0;
@@ -63,6 +68,7 @@ export default function CaraScene(props: {
     let last = 0;
     if (reduced) {
       scene.render(ctx);
+      onReveal();
       onDone();
     } else {
       setShowSkip(true);

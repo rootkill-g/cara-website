@@ -1,4 +1,4 @@
-import { TAU, easeOutCubic, rgba } from "./math";
+import { TAU, easeOutCubic, rgba, smoothstep } from "./math";
 
 // The Cara mark in its native 64×64 space (same path as the SVG logo): a
 // carved "C" with an inscribed point.
@@ -22,7 +22,13 @@ export class Logo {
     const e = easeOutCubic(reveal);
     const bob = Math.sin(t * 0.5) * size * 0.012;
     const y = cy + bob;
-    const breathe = 0.7 + 0.3 * Math.sin(t * 0.9);
+    // glow breathes on a slow, held cycle (17s): dark for ~7s, ease up over
+    // ~2.5s, hold at three-quarter strength for ~5s, ease back down over ~2.5s.
+    // Built from two ramps (rise minus fall). The mark itself stays solid
+    // throughout — only the halo + shadow blur ride this value.
+    const ph = t % 17;
+    const glow = smoothstep(7, 9.5, ph) - smoothstep(14.5, 17, ph);
+    const breathe = 0.75 * glow;
 
     ctx.save();
     ctx.globalAlpha = e;
@@ -59,24 +65,20 @@ export class Logo {
     ctx.scale(k, k);
     ctx.translate(-33, -32);
 
-    // glow pass
+    // the carved "C" — a single solid amber stroke in the brand colour
+    // (glyph-500, #e8a33d), the same colour as the navbar logo. One pass, so
+    // there's no darker rim around a lighter core; the warm glow is the blurred
+    // shadow halo, not a second, wider stroke underneath.
     ctx.shadowColor = "rgba(242,183,92,0.9)";
     ctx.shadowBlur = 26 * breathe;
-    ctx.strokeStyle = rgba(242, 183, 92, e);
+    ctx.strokeStyle = rgba(232, 163, 61, e);
     ctx.lineWidth = 5;
     ctx.lineCap = "round";
     ctx.stroke(C_PATH);
 
-    // crisp pass
-    ctx.shadowBlur = 0;
-    ctx.strokeStyle = rgba(255, 230, 190, e);
-    ctx.lineWidth = 2.2;
-    ctx.stroke(C_PATH);
-
-    // the inscribed point
-    ctx.shadowColor = "rgba(242,183,92,0.9)";
+    // the inscribed point — same amber, same soft glow
     ctx.shadowBlur = 18 * breathe;
-    ctx.fillStyle = rgba(255, 235, 200, e);
+    ctx.fillStyle = rgba(232, 163, 61, e);
     ctx.beginPath();
     ctx.arc(43, 32, 3.4, 0, TAU);
     ctx.fill();

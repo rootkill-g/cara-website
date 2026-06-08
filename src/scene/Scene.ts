@@ -11,6 +11,10 @@ import { TAU, clamp, easeInCubic, lerp, rgba, smoothstep } from "./math";
 const STRIKE_END = 2.2; // star finishes its descent and strikes the wood
 const REVEAL_END = 3.6; // sky, treeline, people, logo settle in
 export const AMBIENT_AT = REVEAL_END; // everything settled, loops forever
+// the hero text comes in here — the moment the fire takes and the gathering
+// and logo begin to appear, so the words arrive *with* the scene rather than
+// after the whole cinematic has settled
+const REVEAL_AT = STRIKE_END;
 
 /**
  * The whole cinematic. Owns every subsystem and drives them off a single clock.
@@ -23,6 +27,7 @@ export class Scene {
   private w = 0;
   private h = 0;
   private flash = 0;
+  private revealFired = false;
   private introFired = false;
 
   private campfire: Fire;
@@ -34,16 +39,18 @@ export class Scene {
 
   constructor(
     reduced: boolean,
+    private onReveal: () => void,
     private onIntroDone: () => void,
   ) {
-    this.campfire = new Fire({ x: 0, y: 0, spread: 46, scale: 1.25, rate: 300 });
-    this.embers = new Embers(0, 0, 1.2);
+    this.campfire = new Fire({ x: 0, y: 0, spread: 34, scale: 0.95, rate: 300 });
+    this.embers = new Embers(0, 0, 0.95);
     if (reduced) {
       // Respect reduced-motion: jump straight to the settled night and let the
       // host render a single calm frame (no RAF loop). The host fires the
-      // intro-done callback itself in this path.
+      // reveal + intro-done callbacks itself in this path.
       this.t = AMBIENT_AT + 0.5;
       this.star.visible = false;
+      this.revealFired = true;
       this.introFired = true;
     }
   }
@@ -79,17 +86,33 @@ export class Scene {
     const cx = this.w * 0.5;
     const startY = this.h * 0.22;
     const fireY = this.campfirePt().y;
+    const portrait = this.h > this.w;
     const R0 = m * 0.45; // entry radius — large enough to start off-screen, up top
-    const turns = 1.35;
+    // A wide screen gives the spiral room to read as proper loops. On a narrow
+    // portrait phone the radius is bound by the small width, so the landscape
+    // squash flattens the loop into a horizontal sweep that snaps back like a
+    // bounce. The fix is *taller* loops, not fewer: a phone has vertical room to
+    // spare, so make the ellipse a touch taller than wide (squash > 1) and keep
+    // the full turns — the star coils down, swings back up, then dives into the
+    // fire, instead of drooping straight down.
+    const turns = portrait ? 1.45 : 1.35;
+    const squash = portrait ? 1.2 : 0.62; // loop's vertical : horizontal ratio
     const ang = -Math.PI / 2 + turns * TAU * p;
     const radius = R0 * Math.pow(1 - p, 1.3); // shrinks to 0 at the fire
     const cy = lerp(startY, fireY, easeInCubic(p)); // whirl descends, accelerating
-    return { x: cx + Math.cos(ang) * radius, y: cy + Math.sin(ang) * radius * 0.62 };
+    return { x: cx + Math.cos(ang) * radius, y: cy + Math.sin(ang) * radius * squash };
   }
 
   skip() {
     if (this.t < AMBIENT_AT) this.t = AMBIENT_AT + 0.5;
     this.star.extinguish();
+  }
+
+  private fireReveal() {
+    if (!this.revealFired) {
+      this.revealFired = true;
+      this.onReveal();
+    }
   }
 
   private fireDone() {
@@ -122,6 +145,7 @@ export class Scene {
     this.embers.intensity = smoothstep(STRIKE_END, REVEAL_END, t);
     this.embers.update(dt, t);
 
+    if (!this.revealFired && t >= REVEAL_AT) this.fireReveal();
     if (!this.introFired && t >= AMBIENT_AT) this.fireDone();
   }
 

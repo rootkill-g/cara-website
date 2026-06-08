@@ -138,9 +138,11 @@ export class Figures {
     }
     this.horizon = horizon;
 
-    // a few people around the fire, fanned to the sides so the fire sits
-    // between the viewer and the group — kept close enough to catch its glow
-    const slots = [-2.0, -1.1, 1.0, 1.9, -0.35];
+    // a few people huddled close around the fire. The innermost two flank the
+    // flame at ±0.8 — near enough to share the warmth, but clear of the narrow
+    // column directly behind it: the translucent additive fire can't occlude a
+    // silhouette, so a centred figure's amber rim would read through the flames.
+    const slots = [-2.6, -1.7, -0.8, 0.8, 1.7];
     this.people = slots.map((k, i) => ({
       x: this.cx + k * 64 * s,
       ground: this.groundY + (i % 2 === 0 ? 6 : 12) * s,
@@ -149,9 +151,10 @@ export class Figures {
       fireOnRight: k < 0,
     }));
 
-    // Ziggy tucked behind the 1st person, head peeking into the gap toward the
-    // fire — the people in front give it depth (it's underlaid, not pasted on)
-    this.igX = this.cx - 110 * s;
+    // Ziggy nestled in the gap between the two inner-left people, head peeking
+    // toward the fire — the people in front give it depth (underlaid, not pasted
+    // on). Tracks the left cluster's inward shift so it stays in the gap.
+    this.igX = this.cx - 91 * s;
     this.igScale = s;
   }
   private horizon = 0;
@@ -338,10 +341,10 @@ export class Figures {
     if (flicker > 0.01) {
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
-      const rad = 320 * this.scale;
+      const rad = 290 * this.scale;
       const clearing = ctx.createRadialGradient(this.cx, this.groundY, 0, this.cx, this.groundY, rad);
-      clearing.addColorStop(0, rgba(255, 150, 62, 0.3 * flicker));
-      clearing.addColorStop(0.5, rgba(255, 120, 50, 0.12 * flicker));
+      clearing.addColorStop(0, rgba(255, 150, 62, 0.24 * flicker));
+      clearing.addColorStop(0.5, rgba(255, 120, 50, 0.1 * flicker));
       clearing.addColorStop(1, rgba(255, 100, 40, 0));
       ctx.fillStyle = clearing;
       ctx.beginPath();
