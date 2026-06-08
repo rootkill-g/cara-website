@@ -140,7 +140,7 @@ export default function Home() {
             <For each={refuses}>
               {(item) => (
                 <li class="flex gap-3 rounded-lg border border-ink-800 bg-ink-900/50 px-4 py-3 text-sm leading-relaxed text-fog-300">
-                  <span class="select-none text-glyph-500">·</span>
+                  <span class="select-none text-glyph-500">—</span>
                   <span>{item}</span>
                 </li>
               )}

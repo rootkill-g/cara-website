@@ -129,7 +129,7 @@ export default function Glyph() {
           <For each={excluded}>
             {(item) => (
               <li class="flex gap-3">
-                <span class="select-none text-glyph-500">·</span>
+                <span class="select-none text-glyph-500">—</span>
                 <span>{item}</span>
               </li>
             )}
