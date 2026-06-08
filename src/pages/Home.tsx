@@ -30,8 +30,8 @@ const refuses = [
 
 const roadmap = [
   { n: "01", title: "The ring", tone: "live" as const, body: "Framed shared-memory channel, strict Release/Acquire. Done, unit-tested." },
-  { n: "02", title: "Wire protocols", tone: "soon" as const, body: "Draw-command format and the IPC channel, then kill the busy-wait." },
-  { n: "03", title: "Host renderer", tone: "plan" as const, body: "GPU surface, framebuffer, ID buffer, O(1) hit-test." },
+  { n: "02", title: "Wire protocols", tone: "live" as const, body: "Draw-command vocabulary and the IPC control socket. Frames signal over the channel, the busy-wait is gone." },
+  { n: "03", title: "Host renderer", tone: "soon" as const, body: "A wgpu surface clears and presents, the first DrawRect on screen. ID buffer and O(1) hit-test next." },
   { n: "04", title: "Text", tone: "plan" as const, body: "Glyph atlas, with bidi, line-breaking, shaping, raster." },
   { n: "05", title: "Renderer brain", tone: "plan" as const, body: "Scene-graph engine, parser, style, layout, paint." },
   { n: "06", title: "Interactivity", tone: "plan" as const, body: "Lua bindings, reactivity, events, components." },
@@ -54,7 +54,7 @@ export default function Home() {
             A from-scratch browser engine · written in Zig
           </p>
           <h1 class="font-mono uppercase mt-4 max-w-3xl text-2xl text-glyph-400 font-medium leading-[1.12] tracking-tight text-paper drop-shadow-[0_2px_20px_rgba(0,0,0,0.85)] sm:mt-5 sm:text-4xl sm:leading-[1.08]">
-            Let's rewrite the internet
+            Let's <span class="text-glyph-500">rewrite</span> the internet
           </h1>
           <p class="mt-5 max-w-xl text-sm leading-relaxed text-fog-300 sm:mt-6 sm:text-lg">
             We gathered around a different fire <br />
@@ -244,8 +244,8 @@ export default function Home() {
             </h2>
           </div>
           <p class="hidden max-w-xs text-sm leading-relaxed text-fog-500 sm:block">
-            Each layer sits on a proven one. The window is up, the shared-memory
-            ring real and tested.
+            Each layer sits on a proven one. The ring is real and tested, and
+            the first frames now reach the GPU.
           </p>
         </div>
 

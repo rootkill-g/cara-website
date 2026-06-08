@@ -10,8 +10,9 @@
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code",
     Menlo, Consolas, monospace;
 
-  /* Night — backgrounds, deep to surface. */
-  --color-ink-950: #050608;
+  /* Night — backgrounds, deep to surface. ink-950 is true black so every page
+     matches the hero canvas (#000000), with no lifted tint on OLED. */
+  --color-ink-950: #000000;
   --color-ink-900: #0a0c10;
   --color-ink-850: #0f1217;
   --color-ink-800: #14181f;
