@@ -42,12 +42,12 @@ export default function CaraScene(props: {
       const parent = canvas.parentElement!;
       const w = parent.clientWidth;
       const h = parent.clientHeight;
-      // The hero is `h-dvh`, so on mobile the URL bar showing/hiding mid-scroll
-      // changes our height and fires this observer on *every* scroll. Reflowing
-      // the scene each time made it visibly "breathe" and re-rolled the
-      // mountains. Instead we size the scene to the tallest height seen at this
+      // The hero is `h-svh` (stable small-viewport height), so the mobile URL
+      // bar showing/hiding mid-scroll no longer changes the section's height —
+      // the layout stays put. This observer still guards against any stray
+      // height jitter: we size the scene to the tallest height seen at this
       // width and let the section's `overflow-hidden` clip when the viewport is
-      // momentarily shorter — so the URL bar toggling never reflows the scene.
+      // momentarily shorter, so a transient shrink never reflows the scene.
       // A genuine resize (width change / orientation) re-establishes the height.
       const widthChanged = w !== lastW;
       if (!widthChanged && h <= layoutH) return; // URL-bar shrink or no change

@@ -43,7 +43,7 @@ export default function Home() {
   return (
     <>
       {/* ── Cinematic hero ─────────────────────────────────────────────── */}
-      <section class="relative h-dvh min-h-[640px] w-full overflow-hidden">
+      <section class="relative h-svh min-h-[640px] w-full overflow-hidden">
         <CaraScene class="absolute inset-0 h-full w-full" onReveal={() => setReady(true)} />
 
         <div
