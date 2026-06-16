@@ -1,5 +1,14 @@
 import { TAU, mulberry32, rgba } from "./math";
 
+// The hero range is built from the Codeberg mark's *mountain* (not the circular
+// badge): a clean symmetric peak whose base half-width is CB_SLOPE x its height
+// - the logo's own slope - carrying a moonlit glacier facet on its right face.
+// A few at varied size and position read as a range while staying unmistakably
+// the Codeberg mountain. The official icon measures run-over-rise ~= 0.773;
+// broadened to 0.9 here so each summit still reads as a broad Codeberg peak
+// even though the treeline hides its lower third.
+const CB_SLOPE = 0.9;
+
 interface Tree {
   x: number;
   h: number;
@@ -28,6 +37,9 @@ export class Figures {
   private near: Tree[] = [];
   private mFar: Pt[] = [];
   private mNear: Pt[] = [];
+  // Glacier facets to paint on the prominent near peaks (the logo's signature
+  // light face): each holds the peak apex, its valley baseline, and a strength.
+  private glaciers: { x: number; y: number; valleyY: number; bright: boolean; faceLeft: boolean }[] = [];
   private people: Person[] = [];
   private cx = 0;
   private groundY = 0;
@@ -102,16 +114,19 @@ export class Figures {
     this.ziggyRim = rim;
   }
 
-  private ridge(baseY: number, hiY: number, segments: number): Pt[] {
-    const r = this.rng;
-    const w = this.w;
-    const pts: Pt[] = [{ x: -40, y: baseY }];
-    for (let i = 0; i <= segments; i++) {
-      const x = (i / segments) * (w + 80) - 40;
-      const y = baseY - (baseY - hiY) * (0.2 + r() * 0.8);
-      pts.push({ x, y });
+  // A connected ridgeline of symmetric Codeberg peaks rising from a flat valley
+  // baseline (the treeline hides the floor, so only the summits read). Each
+  // peak's half-width follows the logo slope, so every summit *is* the Codeberg
+  // mountain. Returned as a fill polygon, same shape drawRidge expects.
+  private mountainRidge(peaks: { x: number; y: number }[], valleyY: number): Pt[] {
+    const pts: Pt[] = [{ x: -40, y: valleyY }];
+    for (const pk of peaks) {
+      const hw = CB_SLOPE * (valleyY - pk.y);
+      pts.push({ x: pk.x - hw, y: valleyY });
+      pts.push({ x: pk.x, y: pk.y });
+      pts.push({ x: pk.x + hw, y: valleyY });
     }
-    pts.push({ x: w + 40, y: baseY });
+    pts.push({ x: this.w + 40, y: valleyY });
     return pts;
   }
 
@@ -129,19 +144,55 @@ export class Figures {
     this.scale = Math.max(0.7, Math.min(1.4, w / 1100));
     const s = this.scale;
 
-    // mountain ranges (back to front)
-    this.mFar = this.ridge(h * 0.8, h * 0.62, 7);
-    this.mNear = this.ridge(h * 0.83, h * 0.7, 11);
+    // Codeberg mountain ranges (back to front). Prominent peaks rise in the
+    // open margins left and right; the centre stays low, behind the gathering
+    // and clear of the hero copy. The right-hand near peak is the hero summit
+    // and carries the strongest glacier facet. Apex heights are fractions of h
+    // (smaller = taller) - the main knobs for tuning the skyline.
+    const valFar = h * 0.74; // far valley floor (hidden behind the treeline)
+    const valNear = h * 0.775; // near valley floor
+    const farPeaks = [
+      { x: this.cx - w * 0.42, y: h * 0.59 },
+      { x: this.cx + w * 0.04, y: h * 0.63 },
+      { x: this.cx + w * 0.44, y: h * 0.58 },
+    ];
+    this.mFar = this.mountainRidge(farPeaks, valFar);
+    const nearPeaks = [
+      { x: this.cx - w * 0.3, y: h * 0.52 }, // left, prominent (glacier)
+      { x: this.cx - w * 0.07, y: h * 0.66 }, // low centre-left, behind people
+      { x: this.cx + w * 0.12, y: h * 0.64 }, // low centre-right
+      { x: this.cx + w * 0.3, y: h * 0.5 }, // hero summit, right (glacier)
+    ];
+    this.mNear = this.mountainRidge(nearPeaks, valNear);
+    // Glacier facets: the two prominent near summits get the bright signature
+    // face; the far skyline peaks get a dim one so the two-tone reads across the
+    // whole range. The low centre peaks stay plain dark behind the warm fire.
+    // `faceLeft` puts the lit face on whichever side faces the fire at centre,
+    // so the whole range is lit consistently from the gathering, not from off
+    // the edge of the scene.
+    const lit = (p: { x: number; y: number }, valleyY: number, bright: boolean) => ({
+      ...p,
+      valleyY,
+      bright,
+      faceLeft: p.x > this.cx,
+    });
+    this.glaciers = [
+      ...farPeaks.map((p) => lit(p, valFar, false)),
+      lit(nearPeaks[0], valNear, true),
+      lit(nearPeaks[3], valNear, true),
+    ];
 
     // treeline — two parallax layers of pines
     const horizon = this.groundY - 4;
     this.far = [];
     this.near = [];
-    for (let x = -20; x < w + 20; x += 26 + r() * 22) {
-      this.far.push({ x, h: (24 + r() * 30) * s, w: (14 + r() * 12) * s });
+    // Trees tower over the seated people (a person is ~60 units tall): near
+    // pines run ~82-138 units, far ones smaller with distance.
+    for (let x = -20; x < w + 20; x += 28 + r() * 22) {
+      this.far.push({ x, h: (44 + r() * 40) * s, w: (16 + r() * 14) * s });
     }
-    for (let x = -30; x < w + 30; x += 34 + r() * 30) {
-      this.near.push({ x, h: (40 + r() * 56) * s, w: (20 + r() * 18) * s });
+    for (let x = -30; x < w + 30; x += 38 + r() * 30) {
+      this.near.push({ x, h: (82 + r() * 56) * s, w: (28 + r() * 20) * s });
     }
     this.horizon = horizon;
 
@@ -199,6 +250,37 @@ export class Figures {
       for (const p of pts) ctx.lineTo(p.x, p.y);
       ctx.stroke();
     }
+  }
+
+  // The glacier facet - the logo's light face. A crisp, clearly lighter cool
+  // face filling one side of the peak, with a hard dividing ridge from the apex
+  // (the two-tone is the Codeberg signature). `faceLeft` mirrors it onto the
+  // fire-facing side; its outer edge IS the peak's slope; it darkens down the
+  // face so it reads as moonlit, not flat-white.
+  private drawGlacier(
+    ctx: CanvasRenderingContext2D,
+    g: { x: number; y: number; valleyY: number; bright: boolean; faceLeft: boolean },
+  ) {
+    const hw = CB_SLOPE * (g.valleyY - g.y);
+    const dir = g.faceLeft ? -1 : 1; // which side catches the light (toward the fire)
+    const innerX = g.x + dir * hw * 0.15; // dividing ridge meets the base
+    const grad = ctx.createLinearGradient(g.x, g.y, g.x + dir * hw * 0.55, g.valleyY);
+    if (g.bright) {
+      grad.addColorStop(0, rgba(92, 108, 144, 1));
+      grad.addColorStop(0.5, rgba(50, 62, 90, 1));
+      grad.addColorStop(1, rgba(24, 32, 50, 1));
+    } else {
+      grad.addColorStop(0, rgba(40, 50, 74, 1));
+      grad.addColorStop(0.5, rgba(26, 34, 54, 1));
+      grad.addColorStop(1, rgba(16, 22, 38, 1));
+    }
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(g.x, g.y);
+    ctx.lineTo(g.x + dir * hw, g.valleyY);
+    ctx.lineTo(innerX, g.valleyY);
+    ctx.closePath();
+    ctx.fill();
   }
 
   private body(ctx: CanvasRenderingContext2D, p: Person) {
@@ -320,9 +402,12 @@ export class Figures {
     ctx.save();
     ctx.globalAlpha = reveal;
 
-    // mountains (furthest)
+    // Codeberg mountains: far range + its dim facets, then the near range + its
+    // bright facets (each facet behind the ridge of the next layer up)
     this.drawRidge(ctx, this.mFar, rgba(13, 17, 27, 1), true);
-    this.drawRidge(ctx, this.mNear, rgba(7, 10, 15, 1), false);
+    for (const g of this.glaciers) if (!g.bright) this.drawGlacier(ctx, g);
+    this.drawRidge(ctx, this.mNear, rgba(7, 10, 15, 1), true);
+    for (const g of this.glaciers) if (g.bright) this.drawGlacier(ctx, g);
 
     // ground wash — a near-black band so figures read against the sky
     const g = ctx.createLinearGradient(0, this.horizon - 60, 0, h);
