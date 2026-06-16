@@ -11,11 +11,11 @@ const pillars = [
   },
   {
     title: "One language for behavior",
-    body: "Logic lives in Lua, sandboxed. Documents declare. Code stays behind a single $.",
+    body: "Logic lives in Luau, interpreter-only. No executable memory in the sandbox. Code stays behind a single $.",
   },
   {
     title: "One render path",
-    body: "Scene graph → display list → shared memory → screen. Two channels, no third.",
+    body: "Scene graph → display list → frame slots → screen. Two channels, no third.",
   },
 ];
 
@@ -23,18 +23,22 @@ const refuses = [
   "No HTML, and so none of its error-correcting state machines.",
   "No DOM, no CSS cascade, no quirks mode.",
   "No JavaScript runtime baked into the page.",
+  "No executable memory in the renderer's sandbox, ever.",
   "No telemetry, no phone-home, no analytics.",
   "No marketplace, no extension store, no add-on economy.",
   "No opinion about what your homepage should be.",
 ];
 
 const roadmap = [
-  { n: "01", title: "The ring", tone: "live" as const, body: "Framed shared-memory channel, strict Release/Acquire. Done, unit-tested." },
-  { n: "02", title: "Wire protocols", tone: "live" as const, body: "Draw-command vocabulary and the IPC control socket. Frames signal over the channel, the busy-wait is gone." },
-  { n: "03", title: "Host renderer", tone: "soon" as const, body: "A wgpu surface clears and presents, the first DrawRect on screen. ID buffer and O(1) hit-test next." },
-  { n: "04", title: "Text", tone: "plan" as const, body: "Glyph atlas, with bidi, line-breaking, shaping, raster." },
-  { n: "05", title: "Renderer brain", tone: "plan" as const, body: "Scene-graph engine, parser, style, layout, paint." },
-  { n: "06", title: "Interactivity", tone: "plan" as const, body: "Lua bindings, reactivity, events, components." },
+  { n: "01", title: "Frame slots", tone: "soon" as const, body: "The latest-wins triple buffer with the packed latest word. The proven bring-up transport is being reshaped into it now." },
+  { n: "02", title: "Wire protocols", tone: "live" as const, body: "The 13-message IPC socket and the draw-command format. Frames signal over the channel, the busy-wait is gone." },
+  { n: "03", title: "Host renderer", tone: "live" as const, body: "wgpu-native on Metal clears, presents, and draws. A parallel ID buffer hit-tests in O(1) from a single pixel." },
+  { n: "04", title: "Text", tone: "plan" as const, body: "Renderer-owned glyph atlas. Bidi, line-breaking, shaping, raster, and the atlas stream." },
+  { n: "05", title: "Renderer brain", tone: "plan" as const, body: "Scene-graph engine, the Glyph parser, style, strict-box layout, and paint." },
+  { n: "06", title: "Interactivity", tone: "plan" as const, body: "The Luau interpreter, reactivity, event dispatch, and the component library." },
+  { n: "07", title: "Host services", tone: "plan" as const, body: "Network, per-origin storage, clipboard, the AccessKit bridge, the image pipeline." },
+  { n: "08", title: "Security", tone: "plan" as const, body: "The sandbox enforced: no-exec jail, per-origin isolation, the validate-every-byte contract." },
+  { n: "09", title: "Memory & platform", tone: "plan" as const, body: "mmap'd shared fonts, RSS budgets in CI, the zygote fork, Wayland and Cocoa." },
 ];
 
 export default function Home() {
@@ -101,9 +105,10 @@ export default function Home() {
               You light a new fire.
             </p>
             <p>
-              Cara is that fire. A browser small enough to read end to end, built
-              for the people who write and read pages, not the few who own the
-              engines. Not a simpler web. An internet worth calling an evolution.
+              Cara is that fire. A browser, not the browser: small enough that
+              one person can hold it in their head and read all of it in a
+              weekend. Built for the people who read and write pages, not the few
+              who own the engines. An internet worth calling an evolution.
             </p>
           </div>
         </div>
@@ -162,8 +167,9 @@ export default function Home() {
               OS resource: the window, GPU, network, storage. A sandboxed{" "}
               <strong class="text-fog-200">renderer</strong>, one per origin,
               turns a page into a display list. Bulk per-frame data flows through
-              a shared-memory ring. Small control messages flow over an IPC
-              channel. A renderer compromise stays trapped behind the sandbox.
+              shared memory as latest-wins frame slots. Small control messages
+              flow over an IPC socket. A renderer compromise stays trapped behind
+              the sandbox, and the host validates every byte it is handed.
             </p>
             <A
               href="/architecture"
@@ -184,7 +190,7 @@ export default function Home() {
               each={[
                 ["Nodes", "Lowercase are primitives. Capitalized are your components."],
                 ["Utilities", "Dot-prefixed style tokens, mapped at compile time."],
-                ["Attributes", "key=\"value\", or $name for a Lua binding."],
+                ["Attributes", "key=\"value\", or $name for a Luau binding."],
                 ["Children", "Live in braces. Braces are authoritative."],
               ]}
             >
@@ -222,12 +228,13 @@ export default function Home() {
         <Eyebrow>The mantra</Eyebrow>
         <blockquote class="mt-7 max-w-3xl space-y-1 font-mono text-sm leading-relaxed text-fog-300 sm:text-base">
           <p>One language for structure (Glyph).</p>
-          <p>One language for behavior (Lua).</p>
+          <p>One language for behavior (Luau).</p>
           <p>One vocabulary for style (utilities).</p>
           <p>One layout algorithm (strict-box).</p>
           <p>One data structure for everything visible (the scene graph).</p>
           <p>One render path. One reactive primitive. One sandbox boundary.</p>
           <p>No pointers across the boundary. No accreted legacy in any layer.</p>
+          <p>Idle costs nothing.</p>
           <p class="pt-3 text-paper">
             One person should be able to hold this in their head.
           </p>
@@ -244,8 +251,8 @@ export default function Home() {
             </h2>
           </div>
           <p class="hidden max-w-xs text-sm leading-relaxed text-fog-500 sm:block">
-            Each layer sits on a proven one. The ring is real and tested, and
-            the first frames now reach the GPU.
+            Each layer sits on a proven one. The transport is proven, the first
+            frames already reach the GPU, and latest-wins slots land next.
           </p>
         </div>
 

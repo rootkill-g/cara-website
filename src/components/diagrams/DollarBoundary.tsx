@@ -1,8 +1,8 @@
 import { useInView } from "../useInView";
 
 // The single grammatical seam between document and code. `$name` is the only
-// place Glyph references Lua. A click looks the name up in the page's Lua state;
-// a missing function logs and drops the event — the page does not crash.
+// place Glyph references Luau. A click looks the name up in the page's Luau
+// state; a missing function logs and drops the event, and the page does not crash.
 export default function DollarBoundary() {
   const { ref, visible } = useInView();
   const flow = visible() ? "animation: flow-dash 2.5s linear infinite" : "";
@@ -30,7 +30,7 @@ export default function DollarBoundary() {
 
         {/* code side */}
         <div class="rounded-xl border border-star-500/40 bg-star-500/5 px-5 py-4 text-center">
-          <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-star-400">Behavior · Lua</p>
+          <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-star-400">Behavior · Luau</p>
           <p class="mt-2 font-mono text-sm text-fog-200">
             <span class="text-star-300">save</span> = function … end
           </p>
@@ -40,7 +40,7 @@ export default function DollarBoundary() {
       <p class="mt-7 max-w-xl text-sm leading-relaxed text-fog-400">
         No <span class="text-fog-200">&lt;script&gt;</span> tag, no expression syntax, no template
         directive. The boundary is grammatical, not contextual: documents declare, computation
-        lives in Lua, and exactly two characters cross between them.
+        lives in Luau, and exactly two characters cross between them.
       </p>
     </div>
   );

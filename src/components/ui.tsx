@@ -1,7 +1,30 @@
 import type { ParentComponent } from "solid-js";
+import { useInView } from "./useInView";
 
 // Small shared presentational primitives, kept in one place so spacing and
 // type scale stay consistent across pages.
+
+// Scroll-reveal wrapper: fades + rises its children in the first time they
+// enter the viewport. `delay` staggers siblings. Reduced-motion users get the
+// content immediately (the keyframe is disabled in CSS, opacity stays 1).
+export const Reveal: ParentComponent<{ delay?: number; class?: string }> = (
+  props,
+) => {
+  const { ref, visible } = useInView({ threshold: 0.2 });
+  return (
+    <div
+      ref={ref}
+      class={props.class}
+      style={
+        visible()
+          ? `animation: rise-fade .7s var(--ease-out-soft) both; animation-delay:${props.delay ?? 0}s`
+          : "opacity:0"
+      }
+    >
+      {props.children}
+    </div>
+  );
+};
 
 export const Section: ParentComponent<{ id?: string; class?: string }> = (
   props,

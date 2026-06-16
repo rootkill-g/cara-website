@@ -171,6 +171,50 @@
   }
 }
 
+/* a discrete "tick" pop — the generation counter / latest word updating */
+@keyframes tick-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* the dirty bit blinking while a freshly published slot waits to be taken */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* a hostile byte run rejected at the validating gate: nudge in, bounce off */
+@keyframes reject {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  30% {
+    transform: translateX(26px);
+    opacity: 1;
+  }
+  60% {
+    transform: translateX(14px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+}
+
 /* Honour reduced-motion across the whole site: stop ambient + diagram motion.
    The Canvas scene reads the same preference in JS and renders a calm frame. */
 @media (prefers-reduced-motion: reduce) {
@@ -180,7 +224,10 @@
   .starfield::after,
   .anim-float,
   [data-flow],
-  [data-spin] {
+  [data-spin],
+  [data-tick],
+  [data-blink],
+  [data-reject] {
     animation: none !important;
   }
 }

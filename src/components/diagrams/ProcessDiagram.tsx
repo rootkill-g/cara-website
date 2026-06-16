@@ -1,9 +1,9 @@
 import { useInView } from "../useInView";
 
 // Two processes, two channels. The renderer (sandboxed, per origin) produces
-// display lists that flow over the shared-memory ring to the host (privileged);
-// small control messages flow both ways over the IPC channel. The dashes show
-// the direction of flow without a line of code.
+// display lists that flow over shared memory (latest-wins frame slots) to the
+// host (privileged); small control messages flow both ways over the IPC
+// channel. The dashes show the direction of flow without a line of code.
 export default function ProcessDiagram() {
   const { ref, visible } = useInView();
   const flow = (dur: string, reverse = false) =>
@@ -35,8 +35,8 @@ export default function ProcessDiagram() {
         <text x="506" y="186" text-anchor="middle" class="fill-fog-500" style="font-size:11px">window · GPU · network</text>
         <text x="506" y="204" text-anchor="middle" class="fill-fog-500" style="font-size:11px">consumes → presents</text>
 
-        {/* ring channel: renderer → host */}
-        <text x="320" y="104" text-anchor="middle" class="fill-glyph-400 font-mono" style="font-size:10px;letter-spacing:.12em">SHARED-MEMORY RING</text>
+        {/* shared-memory channel: renderer → host */}
+        <text x="320" y="104" text-anchor="middle" class="fill-glyph-400 font-mono" style="font-size:10px;letter-spacing:.12em">SHARED MEMORY · SLOTS</text>
         <line x1="234" y1="122" x2="406" y2="122" stroke="var(--color-ink-700)" stroke-width="6" stroke-linecap="round" />
         <line x1="234" y1="122" x2="406" y2="122" stroke="var(--color-glyph-500)" stroke-width="3"
           stroke-linecap="round" stroke-dasharray="6 16" data-flow style={flow("3s")} />
@@ -47,7 +47,7 @@ export default function ProcessDiagram() {
         <line x1="234" y1="200" x2="406" y2="200" stroke="var(--color-ink-700)" stroke-width="6" stroke-linecap="round" />
         <line x1="234" y1="200" x2="406" y2="200" stroke="var(--color-star-500)" stroke-width="3"
           stroke-linecap="round" stroke-dasharray="5 18" data-flow style={flow("4s", true)} />
-        <text x="320" y="220" text-anchor="middle" class="fill-fog-500" style="font-size:10px">◂ 12 typed messages ▸</text>
+        <text x="320" y="220" text-anchor="middle" class="fill-fog-500" style="font-size:10px">◂ 13 typed messages ▸</text>
       </svg>
     </div>
   );

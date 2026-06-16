@@ -18,7 +18,7 @@ const rules = [
   {
     n: "03",
     title: "Attributes are key=value",
-    body: "Quoted strings, bare numbers, or a $name that binds to Lua. A leading #name is shorthand for an id.",
+    body: "Quoted strings, bare numbers, or a $name that binds to Luau. A leading #name is shorthand for an id.",
   },
   {
     n: "04",
@@ -102,17 +102,17 @@ export default function Glyph() {
           <div>
             <Eyebrow>The $ boundary</Eyebrow>
             <h2 class="mt-5 text-2xl font-semibold tracking-tight text-paper sm:text-3xl">
-              Two characters of Lua surface.
+              Two characters of Luau surface.
             </h2>
             <p class="mt-5 text-base leading-relaxed text-fog-300">
               The <span class="rounded bg-ink-800 px-1.5 py-0.5 font-mono text-glyph-400">$</span>{" "}
               prefix is the only point in Glyph that references code. On a click,
-              a bound name is looked up in the page's Lua state and invoked. If
+              a bound name is looked up in the page's Luau state and invoked. If
               that name is missing, the event is logged and dropped. The page
               does not crash.
             </p>
             <p class="mt-4 text-base leading-relaxed text-fog-300">
-              Documents declare. Computation lives in Lua. The boundary between
+              Documents declare. Computation lives in Luau. The boundary between
               them is grammatical, not contextual, and exactly that wide.
             </p>
           </div>
