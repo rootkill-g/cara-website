@@ -37,6 +37,14 @@ export class Figures {
   private near: Tree[] = [];
   private mFar: Pt[] = [];
   private mNear: Pt[] = [];
+  // The moonlit ridge stroke follows only the visible skyline (upper envelope of
+  // the peaks), NOT the raw fill polygon. The polygon self-intersects wherever
+  // peak bases overlap (heavily so in portrait, where peak height scales with h
+  // but spacing scales with the narrow w), and stroking it draws the hidden
+  // back-slope of one peak crossing the face of the next - the "edges showing
+  // through" artifact. The envelope has no internal crossings by construction.
+  private mFarSky: Pt[] = [];
+  private mNearSky: Pt[] = [];
   // Glacier facets to paint on the prominent near peaks (the logo's signature
   // light face): each holds the peak apex, its valley baseline, and a strength.
   private glaciers: { x: number; y: number; valleyY: number; bright: boolean; faceLeft: boolean }[] = [];
@@ -130,6 +138,43 @@ export class Figures {
     return pts;
   }
 
+  // The visible skyline of a range: the upper envelope of its peak triangles
+  // over a flat valley baseline. At each x the silhouette top is the highest
+  // (smallest y) peak edge covering it, or the valley floor where none does.
+  // Sampled once per layout, then collinear runs are collapsed so the stored
+  // polyline is just the true vertices (apexes, the V-notches where two slopes
+  // cross, and the flat valley lips). Stroking this never traces a hidden edge.
+  private ridgeSkyline(peaks: { x: number; y: number }[], valleyY: number): Pt[] {
+    const x0 = -40;
+    const x1 = this.w + 40;
+    const topAt = (x: number) => {
+      let y = valleyY;
+      for (const pk of peaks) {
+        const hw = CB_SLOPE * (valleyY - pk.y);
+        const d = Math.abs(x - pk.x);
+        if (d < hw) {
+          const ey = valleyY - (valleyY - pk.y) * (1 - d / hw);
+          if (ey < y) y = ey;
+        }
+      }
+      return y;
+    };
+    const raw: Pt[] = [];
+    for (let x = x0; x < x1; x += 1) raw.push({ x, y: topAt(x) });
+    raw.push({ x: x1, y: topAt(x1) });
+    // collapse collinear interior samples down to vertices
+    const out: Pt[] = [raw[0]];
+    for (let i = 1; i < raw.length - 1; i++) {
+      const a = out[out.length - 1];
+      const b = raw[i];
+      const c = raw[i + 1];
+      const cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+      if (Math.abs(cross) > 1e-3) out.push(b);
+    }
+    out.push(raw[raw.length - 1]);
+    return out;
+  }
+
   layout(w: number, h: number) {
     // Re-seed from the fixed seed every layout. The mountains, treeline and
     // people all draw from this one PRNG; without the reset each resize would
@@ -157,6 +202,7 @@ export class Figures {
       { x: this.cx + w * 0.44, y: h * 0.58 },
     ];
     this.mFar = this.mountainRidge(farPeaks, valFar);
+    this.mFarSky = this.ridgeSkyline(farPeaks, valFar);
     const nearPeaks = [
       { x: this.cx - w * 0.3, y: h * 0.52 }, // left, prominent (glacier)
       { x: this.cx - w * 0.07, y: h * 0.66 }, // low centre-left, behind people
@@ -164,6 +210,7 @@ export class Figures {
       { x: this.cx + w * 0.3, y: h * 0.5 }, // hero summit, right (glacier)
     ];
     this.mNear = this.mountainRidge(nearPeaks, valNear);
+    this.mNearSky = this.ridgeSkyline(nearPeaks, valNear);
     // Glacier facets: the two prominent near summits get the bright signature
     // face; the far skyline peaks get a dim one so the two-tone reads across the
     // whole range. The low centre peaks stay plain dark behind the warm fire.
@@ -232,7 +279,7 @@ export class Figures {
     }
   }
 
-  private drawRidge(ctx: CanvasRenderingContext2D, pts: Pt[], fill: string, moonlit: boolean) {
+  private drawRidge(ctx: CanvasRenderingContext2D, pts: Pt[], fill: string, skyline?: Pt[]) {
     ctx.fillStyle = fill;
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);
@@ -241,13 +288,16 @@ export class Figures {
     ctx.lineTo(-40, this.h);
     ctx.closePath();
     ctx.fill();
-    if (moonlit) {
-      // a faint cool light catching the ridgeline, like moonlight on the peaks
+    if (skyline) {
+      // a faint cool light catching the ridgeline, like moonlight on the peaks.
+      // Trace only the upper envelope so overlapping peaks never stroke a hidden
+      // back-slope across the face of the peak in front of them.
       ctx.strokeStyle = rgba(150, 165, 205, 0.22);
       ctx.lineWidth = 1;
+      ctx.lineJoin = "round";
       ctx.beginPath();
-      ctx.moveTo(pts[0].x, pts[0].y);
-      for (const p of pts) ctx.lineTo(p.x, p.y);
+      ctx.moveTo(skyline[0].x, skyline[0].y);
+      for (const p of skyline) ctx.lineTo(p.x, p.y);
       ctx.stroke();
     }
   }
@@ -404,9 +454,9 @@ export class Figures {
 
     // Codeberg mountains: far range + its dim facets, then the near range + its
     // bright facets (each facet behind the ridge of the next layer up)
-    this.drawRidge(ctx, this.mFar, rgba(13, 17, 27, 1), true);
+    this.drawRidge(ctx, this.mFar, rgba(13, 17, 27, 1), this.mFarSky);
     for (const g of this.glaciers) if (!g.bright) this.drawGlacier(ctx, g);
-    this.drawRidge(ctx, this.mNear, rgba(7, 10, 15, 1), true);
+    this.drawRidge(ctx, this.mNear, rgba(7, 10, 15, 1), this.mNearSky);
     for (const g of this.glaciers) if (g.bright) this.drawGlacier(ctx, g);
 
     // ground wash — a near-black band so figures read against the sky
