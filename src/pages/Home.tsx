@@ -30,7 +30,7 @@ const refuses = [
 ];
 
 const roadmap = [
-  { n: "01", title: "Frame slots", tone: "soon" as const, body: "The latest-wins triple buffer with the packed latest word. The proven bring-up transport is being reshaped into it now." },
+  { n: "01", title: "Frame slots", tone: "live" as const, body: "The latest-wins triple buffer with the packed latest word. The bring-up ring is gone, the three fixed slots carry every frame end to end." },
   { n: "02", title: "Wire protocols", tone: "live" as const, body: "The 13-message IPC socket and the draw-command format. Frames signal over the channel, the busy-wait is gone." },
   { n: "03", title: "Host renderer", tone: "live" as const, body: "wgpu-native on Metal clears, presents, and draws. A parallel ID buffer hit-tests in O(1) from a single pixel." },
   { n: "04", title: "Text", tone: "plan" as const, body: "Renderer-owned glyph atlas. Bidi, line-breaking, shaping, raster, and the atlas stream." },
@@ -251,8 +251,8 @@ export default function Home() {
             </h2>
           </div>
           <p class="hidden max-w-xs text-sm leading-relaxed text-fog-500 sm:block">
-            Each layer sits on a proven one. The transport is proven, the first
-            frames already reach the GPU, and latest-wins slots land next.
+            Each layer sits on a proven one. The transport, the wire protocols,
+            and the GPU path are done. The text pipeline lands next.
           </p>
         </div>
 
