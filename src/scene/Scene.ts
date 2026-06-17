@@ -5,11 +5,11 @@ import { ShootingStar } from "./ShootingStar";
 import { Starfield } from "./Starfield";
 import { TAU, clamp, easeInCubic, lerp, rgba, smoothstep } from "./math";
 
-// Phase boundaries, in seconds since the scene began. Kept deliberately short —
-// the star streaks in, loops once, strikes the wood, and the night settles in
-// under four seconds. No slow build-up before the page is usable.
-const STRIKE_END = 2.2; // star finishes its descent and strikes the wood
-const REVEAL_END = 3.6; // sky, treeline, people, logo settle in
+// Phase boundaries, in seconds since the scene began. Kept snappy — the star
+// streaks in, loops, strikes the wood, and the night settles in ~1.5 seconds.
+// No slow build-up before the page is usable.
+const STRIKE_END = 0.95; // star finishes its descent and strikes the wood
+const REVEAL_END = 1.6; // sky, treeline, people, logo settle in
 export const AMBIENT_AT = REVEAL_END; // everything settled, loops forever
 // the hero text comes in here — the moment the fire takes and the gathering
 // and logo begin to appear, so the words arrive *with* the scene rather than
@@ -59,14 +59,31 @@ export class Scene {
     this.w = w;
     this.h = h;
     this.figures.layout(w, h);
+    // Scale the fire with the viewport so it stays proportionate to the
+    // gathering — the people/trees clamp to 0.7 on phones (w/1100), but the
+    // fire was a fixed 0.95, which read ~35% oversized on a narrow screen. Cap
+    // at 1 so wide/laptop screens keep the size that already looked right.
+    const figScale = Math.max(0.7, Math.min(1.4, w / 1100));
+    const vf = Math.min(1, figScale);
+    // sized to sit on the small wood cone (which is 0.7 of the figure scale),
+    // so the flame doesn't overflow the pile
+    this.campfire.setScale(0.7 * vf, 24 * vf);
+    this.embers.setScale(0.7 * vf);
+    // Sit the flame on the apex of the small wood cone (drawn by Figures with
+    // its tips ~8*scale above the ground) rather than at ground level, so the
+    // fire burns on top of the woodpile.
     const cf = this.campfirePt();
-    this.campfire.moveTo(cf.x, cf.y);
-    this.embers.moveTo(cf.x, cf.y);
+    const lift = 6 * figScale;
+    this.campfire.moveTo(cf.x, cf.y - lift);
+    this.embers.moveTo(cf.x, cf.y - lift);
   }
 
   // ── geometry (derived from current size) ─────────────────────────────────
   private campfirePt() {
-    return { x: this.w * 0.5, y: this.h * 0.82 };
+    // a touch below the open ground line so the fire + wood sit forward, in
+    // among the gathering, rather than reading as set back behind it
+    const s = Math.max(0.7, Math.min(1.4, this.w / 1100));
+    return { x: this.w * 0.5, y: this.h * 0.82 + 5 * s };
   }
   private spiralCenter() {
     // on portrait phones the logo sits higher and smaller so it never crowds
@@ -140,7 +157,7 @@ export class Scene {
     if (prev < STRIKE_END && t >= STRIKE_END) this.flash = 1;
     this.flash = Math.max(0, this.flash - dt * 3);
 
-    this.campfire.intensity = smoothstep(STRIKE_END - 0.2, REVEAL_END - 0.7, t);
+    this.campfire.intensity = smoothstep(STRIKE_END - 0.15, REVEAL_END - 0.25, t);
     this.campfire.update(dt, t);
     this.embers.intensity = smoothstep(STRIKE_END, REVEAL_END, t);
     this.embers.update(dt, t);
@@ -165,7 +182,7 @@ export class Scene {
     const logoSize = portrait
       ? clamp(w * 0.32, 92, 170)
       : clamp(Math.min(w, h) * 0.3, 140, 340);
-    this.logo.render(ctx, sc.x, sc.y - logoSize * 0.06, logoSize, t, smoothstep(STRIKE_END + 0.2, AMBIENT_AT + 0.6, t));
+    this.logo.render(ctx, sc.x, sc.y - logoSize * 0.06, logoSize, t, smoothstep(STRIKE_END + 0.15, AMBIENT_AT + 0.3, t));
 
     // travelling star (quick fade-in so it doesn't pop on the first frame)
     this.star.render(ctx, this.star.visible ? smoothstep(0, 0.12, t) : 0);

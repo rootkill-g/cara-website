@@ -32,16 +32,46 @@ export class Fire {
   private ps: P[] = [];
   private acc = 0; // fractional spawn accumulator
   private base = 0; // smoothed population intensity (no oscillation)
+  private sprites: HTMLCanvasElement[] = [];
   flicker = 0;
   intensity = 1;
 
   constructor(private o: FireOpts) {
     this.o.rate ??= 220;
+    if (typeof document !== "undefined") this.buildSprites();
+  }
+
+  // Pre-rendered soft, colour-graded blobs along the fire ramp. Drawn additively
+  // (instead of hard-edged arcs) so overlapping particles melt into one
+  // continuous luminous body — a flame, not a spray of dots.
+  private buildSprites() {
+    const N = 16;
+    const S = 64;
+    for (let i = 0; i < N; i++) {
+      const [r, g, b] = fireColor(i / (N - 1));
+      const c = document.createElement("canvas");
+      c.width = S;
+      c.height = S;
+      const cx = c.getContext("2d")!;
+      const grad = cx.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+      grad.addColorStop(0, rgba(r, g, b, 1));
+      grad.addColorStop(0.45, rgba(r, g, b, 0.35));
+      grad.addColorStop(1, rgba(r, g, b, 0));
+      cx.fillStyle = grad;
+      cx.fillRect(0, 0, S, S);
+      this.sprites.push(c);
+    }
   }
 
   moveTo(x: number, y: number) {
     this.o.x = x;
     this.o.y = y;
+  }
+
+  // Scale the flame to the viewport so it stays proportionate to the gathering.
+  setScale(scale: number, spread: number) {
+    this.o.scale = scale;
+    this.o.spread = spread;
   }
 
   private spawn() {
@@ -111,7 +141,8 @@ export class Fire {
     if (this.intensity > 0 || this.ps.length) {
       const gl = 68 * o.scale * (0.78 + 0.22 * this.flicker);
       const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, gl);
-      grad.addColorStop(0, rgba(255, 168, 72, 0.24 * this.flicker));
+      grad.addColorStop(0, rgba(255, 178, 92, 0.26 * this.flicker));
+      grad.addColorStop(0.5, rgba(255, 140, 60, 0.1 * this.flicker));
       grad.addColorStop(1, rgba(255, 120, 40, 0));
       ctx.fillStyle = grad;
       ctx.beginPath();
@@ -119,17 +150,20 @@ export class Fire {
       ctx.fill();
     }
 
+    // soft, colour-graded blobs: each particle fades IN at birth and OUT at
+    // death (so nothing pops into being), and the feathered sprites overlap
+    // additively into one continuous flame body instead of a spray of discs.
     for (const p of this.ps) {
       const lf = p.life / p.max;
-      const [r, g, b] = fireColor(lf);
-      // fade in at birth, out at death — kept translucent so overlapping
-      // particles layer into a flame instead of a solid white-hot blob
-      const a = Math.min(1, lf * 1.7) * 0.38;
-      ctx.fillStyle = rgba(r, g, b, a);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size * (0.35 + lf * 0.85), 0, TAU);
-      ctx.fill();
+      const fade = Math.min(1, (1 - lf) / 0.16) * Math.min(1, lf * 1.7);
+      const a = fade * 0.34;
+      if (a <= 0.003 || !this.sprites.length) continue;
+      const spr = this.sprites[Math.round(lf * (this.sprites.length - 1))];
+      const rad = p.size * (0.35 + lf * 0.85) * 2.3;
+      ctx.globalAlpha = a;
+      ctx.drawImage(spr, p.x - rad, p.y - rad, rad * 2, rad * 2);
     }
+    ctx.globalAlpha = 1;
     ctx.restore();
   }
 }
@@ -159,6 +193,10 @@ export class Embers {
   moveTo(x: number, y: number) {
     this.x = x;
     this.y = y;
+  }
+
+  setScale(scale: number) {
+    this.scale = scale;
   }
 
   update(dt: number, t: number) {

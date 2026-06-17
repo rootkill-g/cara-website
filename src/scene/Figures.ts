@@ -447,6 +447,88 @@ export class Figures {
     ctx.restore();
   }
 
+  // A small teepee of firewood: log bottoms spread on the ground, tops meeting
+  // at a low apex, with the flame (raised by the Scene) on top. The logs use
+  // the scene's own language — near-black silhouettes like the people, with a
+  // thin gold rim catching the fire on their upper edge — rather than bright
+  // gradient faces, which read as light beams instead of wood.
+  private drawWood(ctx: CanvasRenderingContext2D, flicker: number) {
+    const ls = this.scale * 0.7; // the woodpile is 30% smaller than the figures
+    const cx = this.cx;
+    // matches the fire's forward drop in Scene.campfirePt so wood + flame stay aligned
+    const gy = this.groundY + 5 * this.scale;
+    const apexY = gy - 12 * ls;
+    // [bottomX, bottomY, topX, topY, thickness]; bottoms fan out, tops meet
+    const logs: [number, number, number, number, number][] = [
+      [cx - 16 * ls, gy + 5 * ls, cx - 2 * ls, apexY, 4.5 * ls],
+      [cx - 8 * ls, gy + 6 * ls, cx + 1 * ls, apexY - 1 * ls, 4 * ls],
+      [cx + 0.5 * ls, gy + 6 * ls, cx - 0.5 * ls, apexY - 1.5 * ls, 4 * ls],
+      [cx + 8 * ls, gy + 6 * ls, cx - 1 * ls, apexY - 1 * ls, 4 * ls],
+      [cx + 16 * ls, gy + 5 * ls, cx + 2 * ls, apexY, 4.5 * ls],
+    ];
+
+    // dark log bodies — a cool bluish dark so the pile blends into the
+    // mountains/treeline rather than standing out as a warm-brown block
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.strokeStyle = rgba(9, 12, 19, 1);
+    for (const [bx, by, tx, ty, lw] of logs) {
+      ctx.lineWidth = lw;
+      ctx.beginPath();
+      ctx.moveTo(bx, by);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    if (flicker > 0.02) {
+      // thin gold rim on the upper (fire-facing) edge of each log, brightest up
+      // near the flame and fading toward the ground — the same cartoony edge the
+      // people and ziggy carry, so the wood belongs to the scene
+      ctx.save();
+      ctx.lineCap = "round";
+      for (const [bx, by, tx, ty, lw] of logs) {
+        const dx = tx - bx;
+        const dy = ty - by;
+        const len = Math.hypot(dx, dy) || 1;
+        let nx = -dy / len;
+        let ny = dx / len;
+        if (ny > 0) {
+          nx = -nx;
+          ny = -ny;
+        } // normal points up, toward the fire
+        const off = lw * 0.34;
+        const x1 = bx + nx * off;
+        const y1 = by + ny * off;
+        const x2 = tx + nx * off;
+        const y2 = ty + ny * off;
+        const g = ctx.createLinearGradient(x2, y2, x1, y1); // apex → base
+        g.addColorStop(0, rgba(255, 178, 92, 0.75 * flicker));
+        g.addColorStop(0.65, rgba(255, 150, 80, 0.12 * flicker));
+        g.addColorStop(1, rgba(255, 150, 80, 0));
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 1.5 * ls;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // a faint ember glow at the base so the foot of the pile sits in warmth
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const eg = ctx.createRadialGradient(cx, gy + 3 * ls, 0, cx, gy + 3 * ls, 18 * ls);
+      eg.addColorStop(0, rgba(255, 120, 44, 0.26 * flicker));
+      eg.addColorStop(1, rgba(255, 90, 30, 0));
+      ctx.fillStyle = eg;
+      ctx.beginPath();
+      ctx.ellipse(cx, gy + 4 * ls, 18 * ls, 7 * ls, 0, 0, TAU);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
   render(ctx: CanvasRenderingContext2D, w: number, h: number, reveal: number, flicker: number) {
     if (reveal <= 0) return;
     ctx.save();
@@ -483,14 +565,20 @@ export class Figures {
     if (flicker > 0.01) {
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
-      const rad = 290 * this.scale;
+      const rad = 340 * this.scale;
       const clearing = ctx.createRadialGradient(this.cx, this.groundY, 0, this.cx, this.groundY, rad);
-      clearing.addColorStop(0, rgba(255, 150, 62, 0.24 * flicker));
-      clearing.addColorStop(0.5, rgba(255, 120, 50, 0.1 * flicker));
+      // A concave (ease-out) falloff with a long faint tail: bright near the
+      // fire, softening fast, then dissolving to nothing with no defined disk
+      // edge — so the warmth blends into the dark instead of reading as an oval.
+      clearing.addColorStop(0, rgba(255, 150, 62, 0.22 * flicker));
+      clearing.addColorStop(0.12, rgba(255, 142, 58, 0.15 * flicker));
+      clearing.addColorStop(0.3, rgba(255, 130, 52, 0.075 * flicker));
+      clearing.addColorStop(0.55, rgba(255, 118, 46, 0.03 * flicker));
+      clearing.addColorStop(0.8, rgba(255, 108, 42, 0.008 * flicker));
       clearing.addColorStop(1, rgba(255, 100, 40, 0));
       ctx.fillStyle = clearing;
       ctx.beginPath();
-      ctx.ellipse(this.cx, this.groundY, rad, rad * 0.7, 0, 0, TAU);
+      ctx.ellipse(this.cx, this.groundY, rad, rad * 0.78, 0, 0, TAU);
       ctx.fill();
       ctx.restore();
     }
@@ -499,18 +587,8 @@ export class Figures {
     // giving the little creature real depth in the scene
     this.drawIguana(ctx, flicker, reveal);
 
-    // wood pile — crossed logs under the fire
-    ctx.fillStyle = rgba(8, 7, 8, 1);
-    const ls = this.scale;
-    for (const ang of [-0.5, 0.5, 0.05]) {
-      ctx.save();
-      ctx.translate(this.cx, this.groundY + 2 * ls);
-      ctx.rotate(ang);
-      ctx.beginPath();
-      ctx.roundRect(-26 * ls, -4 * ls, 52 * ls, 8 * ls, 4 * ls);
-      ctx.fill();
-      ctx.restore();
-    }
+    // wood pile — a small teepee of logs assembled around the fire
+    this.drawWood(ctx, flicker);
 
     // people — fill black, then warm rim on the fire-facing edge
     ctx.fillStyle = rgba(3, 4, 6, 1);

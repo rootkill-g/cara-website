@@ -195,6 +195,27 @@
   }
 }
 
+/* the same rejection on the stacked phone layout: the gate sits below the
+   renderer, so the hostile byte nudges down toward it, then recoils up */
+@keyframes reject-y {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  30% {
+    transform: translateY(22px);
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(12px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+}
+
 /* a hostile byte run rejected at the validating gate: nudge in, bounce off */
 @keyframes reject {
   0% {

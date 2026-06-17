@@ -18,14 +18,29 @@ export default function DollarBoundary() {
           </p>
         </div>
 
-        {/* the seam */}
-        <svg viewBox="0 0 160 60" class="h-12 w-40 shrink-0" aria-hidden="true">
-          <line x1="6" y1="24" x2="154" y2="24" stroke="var(--color-ink-700)" stroke-width="4" stroke-linecap="round" />
-          <line x1="6" y1="24" x2="154" y2="24" stroke="var(--color-glyph-500)" stroke-width="2.5"
+        {/* the seam — vertical when the cards stack on phones, horizontal on
+            wide screens, so the arrow always points from document to code. On
+            phones the caption sits horizontally under the $, not rotated. */}
+        <div class="flex shrink-0 flex-col items-center sm:hidden" aria-hidden="true">
+          <svg viewBox="0 0 40 72" class="h-[72px] w-10">
+            <text x="20" y="13" text-anchor="middle" class="fill-glyph-400 font-mono" style="font-size:13px;font-weight:700">$</text>
+            <line x1="20" y1="22" x2="20" y2="60" stroke="var(--color-ink-700)" stroke-width="4" stroke-linecap="round" />
+            <line x1="20" y1="22" x2="20" y2="60" stroke="var(--color-glyph-500)" stroke-width="2.5"
+              stroke-linecap="round" stroke-dasharray="4 14" data-flow style={flow} />
+            <path d="M20 62 l-4 -8 l8 0 z" fill="var(--color-glyph-400)" />
+          </svg>
+          <p class="mt-0.5 font-mono text-[9px] text-fog-500">look up &amp; invoke</p>
+        </div>
+        <svg viewBox="0 0 210 28" class="hidden h-7 w-52 shrink-0 sm:block" aria-hidden="true">
+          {/* inline along the flow, mirroring the phone's $ → arrow → caption:
+              the $ marks the source (document side), the caption the action near
+              the code side — not floating above/below the line. */}
+          <text x="2" y="20" text-anchor="start" class="fill-glyph-400 font-mono" style="font-size:14px;font-weight:700">$</text>
+          <line x1="18" y1="14" x2="96" y2="14" stroke="var(--color-ink-700)" stroke-width="4" stroke-linecap="round" />
+          <line x1="18" y1="14" x2="96" y2="14" stroke="var(--color-glyph-500)" stroke-width="2.5"
             stroke-linecap="round" stroke-dasharray="4 14" data-flow style={flow} />
-          <text x="80" y="14" text-anchor="middle" class="fill-glyph-400 font-mono" style="font-size:13px;font-weight:700">$</text>
-          <text x="80" y="46" text-anchor="middle" class="fill-fog-500 font-mono" style="font-size:9px">look up &amp; invoke</text>
-          <path d="M150 24 l-8 -4 l0 8 z" fill="var(--color-glyph-400)" />
+          <path d="M102 14 l-8 -4 l0 8 z" fill="var(--color-glyph-400)" />
+          <text x="112" y="18" text-anchor="start" class="fill-fog-500 font-mono" style="font-size:9.5px">look up &amp; invoke</text>
         </svg>
 
         {/* code side */}
