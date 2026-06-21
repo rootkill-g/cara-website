@@ -5,11 +5,11 @@ import { ShootingStar } from "./ShootingStar";
 import { Starfield } from "./Starfield";
 import { TAU, clamp, easeInCubic, lerp, rgba, smoothstep } from "./math";
 
-// Phase boundaries, in seconds since the scene began. Kept snappy — the star
-// streaks in, loops, strikes the wood, and the night settles in ~1.5 seconds.
+// Phase boundaries, in seconds since the scene began. Kept snappy: the star
+// streaks in, loops, strikes the wood, and the night settles in ~2 seconds.
 // No slow build-up before the page is usable.
-const STRIKE_END = 0.95; // star finishes its descent and strikes the wood
-const REVEAL_END = 1.6; // sky, treeline, people, logo settle in
+const STRIKE_END = 1.2; // star finishes its descent and strikes the wood
+const REVEAL_END = 2.0; // sky, treeline, people, logo settle in
 export const AMBIENT_AT = REVEAL_END; // everything settled, loops forever
 // the hero text comes in here — the moment the fire takes and the gathering
 // and logo begin to appear, so the words arrive *with* the scene rather than
