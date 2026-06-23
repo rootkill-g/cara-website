@@ -35,8 +35,8 @@ const roadmap: RoadmapItem[] = [
   { n: "02", title: "Wire protocols", tone: "live" as const, body: "The 13-message IPC socket and the draw-command format. Frames signal over the channel, the busy-wait is gone." },
   { n: "03", title: "Host renderer", tone: "live" as const, body: "wgpu-native on Metal clears, presents, and draws. A parallel ID buffer hit-tests in O(1) from a single pixel." },
   { n: "04", title: "Text", tone: "live" as const, body: "A renderer-owned glyph atlas behind a shelf packer. FreeType rasterizes coverage, the atlas stream carries it to the host, and DrawTextRun paints a glyph run on screen." },
-  { n: "05", title: "Renderer brain", tone: "soon" as const, body: "Scene-graph engine, the Glyph parser, style, strict-box layout, and paint." },
-  { n: "06", title: "Interactivity", tone: "plan" as const, body: "The Luau interpreter, reactivity, event dispatch, and the component library." },
+  { n: "05", title: "Renderer brain", tone: "live" as const, body: "The scene-graph ECS, the Glyph parser, the style resolver, and two-pass strict-box layout now turn a Glyph document into a painted page end to end. None of it is hardcoded." },
+  { n: "06", title: "Interactivity", tone: "soon" as const, body: "Clicks already bubble to the element you hit and the handler meant to run it. The Luau interpreter is wiring in next, then reactivity and the component library." },
   { n: "07", title: "Host services", tone: "plan" as const, body: "Network, per-origin storage, clipboard, the AccessKit bridge, the image pipeline." },
   { n: "08", title: "Security", tone: "plan" as const, body: "The sandbox enforced: no-exec jail, per-origin isolation, the validate-every-byte contract." },
   { n: "09", title: "Memory & platform", tone: "plan" as const, body: "mmap'd shared fonts, RSS budgets in CI, the zygote fork, Wayland and Cocoa." },
@@ -253,7 +253,8 @@ export default function Home() {
           </div>
           <p class="hidden max-w-xs text-sm leading-relaxed text-fog-500 sm:block">
             Each layer sits on a proven one. Transport, the wire protocols, the
-            GPU path, and now text on screen are done. The renderer brain is underway.
+            GPU path, text, and the renderer brain are done, so a Glyph page now
+            paints end to end. Interactivity is underway.
           </p>
         </div>
 
